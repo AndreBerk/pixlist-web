@@ -1,0 +1,49 @@
+name: 🚀 Deploy Pixlist na HostGator
+
+on:
+  push:
+    branches:
+      - main  # Confirme se a sua branch principal se chama 'main' ou 'master'
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🚚 1. Baixar código do GitHub
+      uses: actions/checkout@v4
+
+    - name: 🐘 2. Preparar PHP 8.2
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: 📦 3. Instalar Dependências (Backend)
+      # Instala as bibliotecas do Laravel (vendor) aqui no GitHub antes de enviar
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev --optimize-autoloader
+
+    - name: ⚡ 4. Compilar Frontend (Vite)
+      # Gera o CSS e JS final (pasta build)
+      run: |
+        npm ci
+        npm run build
+        rm -rf node_modules
+        # Apagamos node_modules para não enviar milhares de arquivos inúteis via FTP
+
+    - name: 📂 5. Enviar para a HostGator
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ./
+        # Como criamos o FTP apontando direto para a pasta certa, usamos ./ aqui
+
+        # IMPORTANTE: Lista do que NÃO substituir
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          .env
+          /storage/*.key
