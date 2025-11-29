@@ -46,4 +46,4 @@ jobs:
           **/.git*/**
           **/node_modules/**
           .env
-          /storage/*.key
+          storage/**
