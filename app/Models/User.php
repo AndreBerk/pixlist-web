@@ -2,45 +2,30 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// [IMPORTANTE] Esta linha deve estar descomentada:
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // <-- Esta era a linha que faltava
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-// Esta é a linha que adicionamos para a relação
-use Illuminate\Database\Eloquent\Relations\HasOne;
-
-class User extends Authenticatable
+// [IMPORTANTE] Adicione "implements MustVerifyEmail" aqui:
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // ... (o resto do código continua igual)
     protected $fillable = [
         'name',
         'email',
         'password',
-        'has_seen_dashboard_tutorial',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -49,11 +34,8 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Define que o Usuário "tem uma" (hasOne) Lista.
-     * * (Este é o método que adicionamos)
-     */
-    public function list(): HasOne
+    // Relação com a lista (mantenha a sua função existente)
+    public function list()
     {
         return $this->hasOne(ListModel::class);
     }

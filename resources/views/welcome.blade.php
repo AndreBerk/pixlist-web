@@ -142,43 +142,75 @@
         </div>
     </section>
 
-    {{-- BENEFÍCIOS RÁPIDOS ======================================= --}}
+    {{-- BENEFÍCIOS RÁPIDOS (ATUALIZADO) ========================== --}}
     <section class="bg-gray-50 py-16" aria-label="Benefícios do Pixlist">
         <div class="container mx-auto px-6 max-w-6xl">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
-                        <i data-lucide="layout-grid" class="w-5 h-5 text-emerald-700"></i>
-                    </div>
-                    <p class="font-semibold">Templates lindos</p>
-                    <p class="text-sm text-gray-600">Visual limpo, moderno e personalizável para cada tipo de evento.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
-                        <i data-lucide="users" class="w-5 h-5 text-emerald-700"></i>
-                    </div>
-                    <p class="font-semibold">RSVP embutido</p>
-                    <p class="text-sm text-gray-600">Controle de convidados, adultos e crianças em um painel simples.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
-                        <i data-lucide="message-square-heart" class="w-5 h-5 text-emerald-700"></i>
-                    </div>
-                    <p class="font-semibold">Mural de recados</p>
-                    <p class="text-sm text-gray-600">Mensagens carinhosas dos convidados aparecem no seu site.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
+            <div class="text-center mb-10">
+                <span class="text-emerald-600 font-bold tracking-widest text-xs uppercase">Funcionalidades Premium</span>
+                <h2 class="text-3xl font-extrabold text-gray-900 mt-2">Tudo o que você precisa</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{-- Benefício 1 --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
                     <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
                         <i data-lucide="shield-check" class="w-5 h-5 text-emerald-700"></i>
                     </div>
-                    <p class="font-semibold">PIX direto & seguro</p>
-                    <p class="text-sm text-gray-600">Sem intermediação no dinheiro. Você no controle do começo ao fim.</p>
+                    <p class="font-bold text-gray-800">PIX Direto & Taxa Zero</p>
+                    <p class="text-sm text-gray-600 mt-1">O dinheiro vai direto para a sua conta. Não tocamos no seu dinheiro.</p>
+                </div>
+
+                {{-- Benefício 2 --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                        <i data-lucide="users" class="w-5 h-5 text-emerald-700"></i>
+                    </div>
+                    <p class="font-bold text-gray-800">RSVP Integrado</p>
+                    <p class="text-sm text-gray-600 mt-1">Controle quem vai, quantos adultos e crianças, tudo num painel simples.</p>
+                </div>
+
+                {{-- Benefício 3 (NOVO) --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Novo</div>
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-3">
+                        <i data-lucide="camera" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <p class="font-bold text-gray-800">Galeria Interativa</p>
+                    <p class="text-sm text-gray-600 mt-1">Seus convidados postam fotos, dão likes e comentam. O "Instagram" da sua festa.</p>
+                </div>
+
+                {{-- Benefício 4 (NOVO) --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-3 right-3 bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Novo</div>
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mb-3">
+                        <i data-lucide="dices" class="w-5 h-5 text-purple-600"></i>
+                    </div>
+                    <p class="font-bold text-gray-800">Roleta da Gravata</p>
+                    <p class="text-sm text-gray-600 mt-1">Gamifique a hora da gravata! Uma roleta divertida para sortear valores.</p>
+                </div>
+
+                {{-- Benefício 5 --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                        <i data-lucide="message-square-heart" class="w-5 h-5 text-emerald-700"></i>
+                    </div>
+                    <p class="font-bold text-gray-800">Mural de Recados</p>
+                    <p class="text-sm text-gray-600 mt-1">Mensagens carinhosas dos convidados aparecem no seu site.</p>
+                </div>
+
+                {{-- Benefício 6 --}}
+                <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                        <i data-lucide="download" class="w-5 h-5 text-emerald-700"></i>
+                    </div>
+                    <p class="font-bold text-gray-800">Exportação em PDF</p>
+                    <p class="text-sm text-gray-600 mt-1">Baixe sua lista de convidados e presentes confirmados para imprimir.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- DESTAQUE + LISTA ========================================= --}}
+    {{-- DESTAQUE + LISTA (ATUALIZADO) ========================= --}}
     <section class="bg-white py-20" aria-labelledby="destaque-lista-title">
         <div class="container mx-auto px-6 max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div class="order-last md:order-first">
@@ -198,22 +230,22 @@
                     <li class="flex items-start gap-3">
                         <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5"></i>
                         <div>
-                            <p class="font-semibold">Gestão de convidados (RSVP)</p>
-                            <p class="text-gray-600 text-sm">Confirmações com total de adultos e crianças, tudo organizado em um painel.</p>
+                            <p class="font-semibold">Rede Social do Evento</p>
+                            <p class="text-gray-600 text-sm">Uma galeria exclusiva onde todos compartilham fotos e interagem.</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
                         <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5"></i>
                         <div>
-                            <p class="font-semibold">Mural de recados</p>
-                            <p class="text-gray-600 text-sm">Mensagens aparecem em carrossel na sua página, criando um clima ainda mais especial.</p>
+                            <p class="font-semibold">Diversão Garantida</p>
+                            <p class="text-gray-600 text-sm">Use a "Roleta da Gravata" para animar a festa e arrecadar mais.</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
                         <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5"></i>
                         <div>
-                            <p class="font-semibold">PIX direto (taxa zero no presente)</p>
-                            <p class="text-gray-600 text-sm">O valor integral vai para sua conta, sem que o Pixlist fique com o dinheiro no meio do caminho.</p>
+                            <p class="font-semibold">PIX direto (taxa zero)</p>
+                            <p class="text-gray-600 text-sm">Receba 100% do valor. Sem intermediários.</p>
                         </div>
                     </li>
                 </ul>
@@ -255,7 +287,7 @@
                         </li>
                         <li class="flex items-center gap-3">
                             <i data-lucide="check" class="w-5 h-5 text-emerald-600"></i>
-                            RSVP integrado e mural de recados
+                            Galeria de Fotos e Roleta incluídas
                         </li>
                         <li class="flex items-center gap-3">
                             <i data-lucide="check" class="w-5 h-5 text-emerald-600"></i>
@@ -279,19 +311,16 @@
                     <h3 class="text-2xl font-bold mb-1">Plano único</h3>
                     <p class="text-emerald-100 mb-4">Pagamento único • sem mensalidade</p>
                     <p class="my-4">
-                        <span class="text-6xl font-extrabold">R$ 49,90</span>
+                        <span class="text-6xl font-extrabold">R$ 39,90</span>
                     </p>
                     <ul class="space-y-2 text-emerald-50 text-left my-6">
-
-                        {{-- [MUDANÇA APLICADA AQUI] --}}
                         <li class="flex items-center gap-3">
                             <i data-lucide="check" class="w-5 h-5 text-white"></i>
                             Acesso válido por 1 ano (365 dias)
                         </li>
-
                         <li class="flex items-center gap-3">
                             <i data-lucide="check" class="w-5 h-5 text-white"></i>
-                            Presentes e convidados ilimitados
+                            Presentes, fotos e convidados ilimitados
                         </li>
                         <li class="flex items-center gap-3">
                             <i data-lucide="check" class="w-5 h-5 text-white"></i>
@@ -347,7 +376,7 @@
                         </div>
                     </div>
                     <p class="mt-4 text-gray-700">
-                        “Os convidados elogiaram a praticidade. Acompanhamos tudo em tempo real e sem taxas sobre os presentes.”
+                        “Os convidados amaram postar fotos na galeria! Ficou uma lembrança linda da festa.”
                     </p>
                     <div class="mt-3 flex items-center gap-1 text-amber-400" aria-label="Avaliação 5 de 5 estrelas">
                         @for ($s = 0; $s < 5; $s++)
@@ -366,7 +395,7 @@
                         </div>
                     </div>
                     <p class="mt-4 text-gray-700">
-                        “Visual lindo e simples de usar. Personalizei a lista do meu jeito e o Pix entrou na hora.”
+                        “A roleta da gravata foi o ponto alto da festa! Todo mundo riu e participou. Recomendo muito.”
                     </p>
                     <div class="mt-3 flex items-center gap-1 text-amber-400" aria-label="Avaliação 5 de 5 estrelas">
                         @for ($s = 0; $s < 5; $s++)
@@ -391,7 +420,7 @@
                     <p class="font-semibold">Vocês cobram taxa sobre os presentes?</p>
                     <p class="text-gray-600 mt-2 text-sm">
                         Não. O convidado paga usando a sua chave PIX e o valor cai direto na sua conta.
-                        O Pixlist não retém nenhuma taxa sobre os presentes (apenas o banco pode cobrar as taxas normais de operação).
+                        O Pixlist não retém nenhuma taxa sobre os presentes.
                     </p>
                 </div>
 
@@ -403,16 +432,16 @@
                 </div>
 
                 <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow">
-                    <p class="font-semibold">Consigo gerenciar RSVP?</p>
+                    <p class="font-semibold">Como funciona a Galeria?</p>
                     <p class="text-gray-600 mt-2 text-sm">
-                        Sim. O painel mostra confirmações, total de adultos e crianças, tudo organizado por evento.
+                        Seus convidados enviam fotos pela página da lista. Você aprova no painel e elas aparecem para todos curtirem e comentarem.
                     </p>
                 </div>
 
                 <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow">
                     <p class="font-semibold">É fácil personalizar a lista?</p>
                     <p class="text-gray-600 mt-2 text-sm">
-                        Muito. Você escolhe templates, adiciona fotos, categorias e ajusta tudo em poucos cliques, sem precisar ser “da tecnologia”.
+                        Muito. Você escolhe templates, adiciona fotos, categorias e ajusta tudo em poucos cliques.
                     </p>
                 </div>
             </div>
@@ -445,4 +474,9 @@
             }
         });
     </script>
+
+    {{-- Termos no Rodapé --}}
+    <div class="bg-gray-50 py-6 text-center border-t border-gray-200">
+        <a href="{{ route('termos') }}" class="text-xs text-gray-500 hover:text-emerald-600 hover:underline transition">Termos de Uso e Privacidade</a>
+    </div>
 </x-guest-layout>

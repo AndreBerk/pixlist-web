@@ -26,10 +26,28 @@ class ListModel extends Model
         'pix_key',
         'rsvp_enabled',
         'trial_expires_at',
-        
-        // --- CAMPOS FINANCEIROS IMPORTANTES ---
-        'plano_pago',        // Permite marcar como pago
-        'plano_expires_at',  // Permite salvar a data de validade (FALTAVA ESTE)
+        'gallery_enabled',
+
+        // --- CAMPOS FINANCEIROS ---
+        'plano_pago',
+        'plano_expires_at',
+
+        // --- CAMPO DA ROLETA (NOVO) ---
+        'roulette_config',
+    ];
+
+    /**
+     * Casts: Converte dados automaticamente ao ler/salvar no banco.
+     * Essencial para datas e para o JSON da roleta.
+     */
+    protected $casts = [
+        'event_date'       => 'date',
+        'trial_expires_at' => 'datetime',
+        'plano_expires_at' => 'datetime',
+        'plano_pago'       => 'boolean',
+        'rsvp_enabled'     => 'boolean',
+        'roulette_config'  => 'array',
+        'gallery_enabled' => 'boolean',
     ];
 
     /* Relação: Pertence a um Usuário */
@@ -54,5 +72,11 @@ class ListModel extends Model
     public function rsvps(): HasMany
     {
         return $this->hasMany(Rsvp::class, 'list_id');
+    }
+
+    /* Relação: Tem Muitas Fotos (Galeria) */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(EventPhoto::class, 'list_id');
     }
 }

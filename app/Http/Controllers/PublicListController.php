@@ -13,54 +13,56 @@ use Illuminate\Support\Facades\DB;
 
 class PublicListController extends Controller
 {
-    /**
-     * Mostra a página pública da lista de presentes.
-     */
     public function show(Request $request, ListModel $list): View
     {
+        // ... (lógica de filtros continua igual) ...
         $filtro = $request->input('filtro');
         $ordenar = $request->input('ordenar');
         $giftsQuery = $list->gifts();
 
-        // Filtro de disponibilidade
         if ($filtro === 'disponiveis') {
             $giftsQuery->whereRaw('quantity_paid < quantity');
         } elseif ($filtro === 'esgotados') {
             $giftsQuery->whereRaw('quantity_paid >= quantity');
         }
 
-        // Filtro de ordenação
         if ($ordenar === 'preco_asc') {
             $giftsQuery->orderBy('value', 'asc');
         } elseif ($ordenar === 'preco_desc') {
             $giftsQuery->orderBy('value', 'desc');
         } else {
-            $giftsQuery->orderBy('value', 'asc'); // Padrão
+            $giftsQuery->orderBy('value', 'asc');
         }
 
         $gifts = $giftsQuery->get();
         $totalArrecadado = $list->transactions()->sum('amount');
 
-        // [MUDANÇA] Pega as mensagens para o Mural (APENAS APROVADAS)
+        // Mural de Recados (apenas aprovados)
         $transactions = $list->transactions()
                             ->where(function($query) {
                                 $query->whereNotNull('guest_name')
                                       ->orWhereNotNull('guest_message');
                             })
-                            ->where('is_approved', true) // <-- SÓ MOSTRA APROVADOS
+                            ->where('is_approved', true)
                             ->orderBy('created_at', 'desc')
                             ->get();
+
+        // [NOVO] Galeria de Fotos (apenas aprovadas)
+        $photos = $list->photos()
+                       ->where('is_approved', true)
+                       ->orderBy('created_at', 'desc')
+                       ->get();
 
         return view('public-list', [
             'list' => $list,
             'gifts' => $gifts,
             'totalArrecadado' => $totalArrecadado,
             'transactions' => $transactions,
+            'photos' => $photos, // <-- Enviamos as fotos para a view
             'filtro_ativo' => $filtro ?? 'todos',
             'ordenar_ativo' => $ordenar ?? 'preco_asc',
         ]);
     }
-
     /**
      * O convidado confirma o pagamento (PIX direto)
      */

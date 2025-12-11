@@ -13,7 +13,10 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FeedbackController; // Import correto
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\EventPhotoController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\TieCuttingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,14 +27,33 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+// [CORREÇÃO] A rota de Termos deve ser PÚBLICA
+Route::view('/termos-de-uso', 'termos')->name('termos');
+
+// Galeria Pública
+Route::get('/lista/{list}/galeria', [GalleryController::class, 'show'])
+     ->name('list.gallery');
+
+// Jogo da Gravata Público
+Route::get('/lista/{list}/gravata', [TieCuttingController::class, 'show'])
+     ->name('list.gravata');
+
+// Lista Pública (Genérica)
 Route::get('/lista/{list}/{slug?}', [PublicListController::class, 'show'])
      ->name('list.public.show');
+
+// Ações Públicas (POST)
+Route::post('/lista/{list}/fotos', [EventPhotoController::class, 'store'])
+    ->name('public.photos.store');
 
 Route::post('/lista/{list}/rsvp', [RsvpController::class, 'store'])
      ->name('list.public.rsvp');
 
 Route::post('/pagar/{gift}', [PublicListController::class, 'pay'])
     ->name('public.gift.pay');
+
+Route::post('/fotos/{photo}/like', [GalleryController::class, 'like'])->name('photos.like');
+Route::post('/fotos/{photo}/comment', [GalleryController::class, 'comment'])->name('photos.comment');
 
 
 /*
@@ -62,7 +84,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         $list = $user->list ?? null;
 
-        // Lógica de acesso atualizada
         $planoAtivo = false;
         if ($list) {
             $planoAtivo = $list->plano_pago &&
@@ -101,35 +122,30 @@ Route::middleware(['auth', 'verified', 'checklist'])->group(function () {
     Route::post('/dashboard/dismiss-tutorial', [DashboardController::class, 'dismissTutorial'])
          ->name('dashboard.dismiss-tutorial');
 
-    // --- RSVP (Admin) ---
+    // RSVP (Admin) e PDF
     Route::get('/rsvp', [RsvpController::class, 'index'])->name('rsvp.index');
+    Route::get('/rsvp/download-pdf', [RsvpController::class, 'downloadPdf'])->name('rsvp.export.pdf');
     Route::post('/rsvp', [RsvpController::class, 'adminStore'])->name('rsvp.admin.store');
     Route::resource('rsvp', RsvpController::class)
         ->only(['edit','update','destroy'])
         ->names('rsvp');
 
-        // --- RSVP (Admin) ---
-    Route::get('/rsvp', [RsvpController::class, 'index'])->name('rsvp.index');
-
-    // [NOVA LINHA]
-    Route::get('/rsvp/exportar-pdf', [RsvpController::class, 'exportPdf'])->name('rsvp.export.pdf');
-    // [FIM DA NOVA LINHA]
-
-    Route::post('/rsvp', [RsvpController::class, 'adminStore'])->name('rsvp.admin.store');
-    Route::resource('rsvp', RsvpController::class)
-        ->only(['edit','update','destroy'])
-        ->names('rsvp');
-
-    // --- Restante do painel ---
+    // Configurações
     Route::get('/configuracoes', [ListConfigController::class, 'edit'])->name('list.config.edit');
     Route::post('/configuracoes', [ListConfigController::class, 'update'])->name('list.config.update');
 
+    // Presentes
     Route::resource('presentes', GiftController::class);
 
-    // Extrato e Aprovação de Mensagens
+    // Extrato
     Route::get('/extrato', [TransactionController::class, 'index'])->name('extrato.index');
     Route::post('/extrato/approve/{transaction}', [TransactionController::class, 'approve'])
          ->name('extrato.approve');
+
+    // Gestão de Fotos
+    Route::get('/fotos', [EventPhotoController::class, 'index'])->name('photos.index');
+    Route::post('/fotos/{photo}/approve', [EventPhotoController::class, 'approve'])->name('photos.approve');
+    Route::delete('/fotos/{photo}', [EventPhotoController::class, 'destroy'])->name('photos.destroy');
 
     // Compartilhar
     Route::get('/compartilhar', function () {
@@ -137,16 +153,12 @@ Route::middleware(['auth', 'verified', 'checklist'])->group(function () {
         return view('compartilhar', ['list' => $list]);
     })->name('list.share');
 
-    // [ROTAS DE FEEDBACK - LUGAR CORRETO]
+    // Feedback
     Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
-});
-// Rota para ZERAR o banco de dados
-Route::get('/zerar-tudo-perigo', function () {
-    // O comando migrate:fresh apaga todas as tabelas e cria de novo
-    // O comando --force é necessário porque estamos em produção
-    Illuminate\Support\Facades\Artisan::call('migrate:fresh --force');
+    // Configuração da Gravata (Admin)
+    Route::get('/gravata/config', [TieCuttingController::class, 'edit'])->name('gravata.edit');
+    Route::post('/gravata/config', [TieCuttingController::class, 'update'])->name('gravata.update');
 
-    return 'Banco de dados zerado e reconstruído com sucesso! Pode criar sua conta agora.';
 });

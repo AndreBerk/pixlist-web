@@ -35,7 +35,7 @@
             {{-- Caixa de Preço --}}
             <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 mb-8">
                 <p class="text-lg text-emerald-800">Taxa de Ativação Única</p>
-                <p class="text-5xl font-extrabold text-emerald-600 my-2">R$ 49,90</p>
+                <p class="text-5xl font-extrabold text-emerald-600 my-2">R$ 39,90</p>
 
                 {{-- [MUDANÇA] Atualizamos o texto para a lógica de 1 ano --}}
                 <p class="text-emerald-700">

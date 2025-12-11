@@ -29,7 +29,7 @@ class PaymentController extends Controller
                 ->with('status', 'Seu plano já está ativo!');
         }
 
-        $paymentAmount = 1.00;// Valor do Plano
+        $paymentAmount = 39.90;// Valor do Plano
 
         try {
             // 1. Configurar credencial
@@ -77,7 +77,7 @@ class PaymentController extends Controller
             $apiResponse = $e->getApiResponse();
             $content = $apiResponse ? $apiResponse->getContent() : null;
             Log::error('Erro API MP:', ['msg' => $e->getMessage(), 'body' => $content]);
-            
+
             return redirect()->route('plano.index')->withErrors(['msg' => 'Erro ao conectar com Mercado Pago. Tente novamente.']);
 
         } catch (\Exception $e) {
@@ -95,7 +95,7 @@ class PaymentController extends Controller
         // --- Validação de Segurança (Assinatura) ---
         $xSignature = $request->header('x-signature');
         $xRequestId = $request->header('x-request-id');
-        
+
         // Separa ts e v1
         $parts = explode(',', $xSignature);
         $ts = null; $v1 = null;
@@ -124,14 +124,14 @@ class PaymentController extends Controller
                 $payment = $client->get($paymentId);
 
                 // Verifica se APROVADO e valor correto
-                if ($payment->status === 'approved' && (float)$payment->transaction_amount >= 1.00) {
-                    
+                if ($payment->status === 'approved' && (float)$payment->transaction_amount >= 39.90) {
+
                     $listId = $payment->external_reference;
                     $list = ListModel::with('user')->find($listId); // Carrega user para o e-mail
 
                     // Se a lista existe e ainda não está paga
                     if ($list && !$list->plano_pago) {
-                        
+
                         // 1. ATIVA NO BANCO
                         $list->update([
                             'plano_pago' => true,
