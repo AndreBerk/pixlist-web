@@ -5,21 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ListModel;
 use App\Models\EventPhoto;
-use Illuminate\Support\Str;
 
 class GalleryController extends Controller
 {
-    // Mostra a grade de fotos (Estilo Instagram)
+    // Exibe a galeria pública
     public function show($listId)
     {
         $list = ListModel::findOrFail($listId);
 
-        $photos = $list->photos()
-                       ->where('is_approved', true)
-                       ->withCount(['likes', 'comments'])
-                       ->with('comments')
-                       ->orderBy('created_at', 'desc')
-                       ->get();
+        $query = $list->photos()
+            ->withCount(['likes', 'comments'])
+            ->with('comments')
+            ->orderBy('created_at', 'desc');
+
+        // ✅ Só filtra aprovadas se moderação estiver ligada
+        if ($list->moderation_enabled) {
+            $query->where('is_approved', true);
+        }
+
+        $photos = $query->get();
 
         return view('public-gallery', [
             'list' => $list,
@@ -27,11 +31,10 @@ class GalleryController extends Controller
         ]);
     }
 
-    // Dar Like (AJAX)
+    // Função de Like
     public function like(Request $request, EventPhoto $photo)
     {
         $sessionId = $request->session()->getId();
-
         $existing = $photo->likes()->where('session_id', $sessionId)->first();
 
         if ($existing) {
@@ -48,39 +51,13 @@ class GalleryController extends Controller
         ]);
     }
 
-    // Comentar (COM FILTRO DE PALAVRÕES)
+    // Função de Comentário
     public function comment(Request $request, EventPhoto $photo)
     {
-        $request->validate([
-            'content' => [
-                'required',
-                'string',
-                'max:200',
-                // [NOVO] Lógica de Bloqueio de Palavras
-                function ($attribute, $value, $fail) {
-                    // Lista básica de palavras ofensivas (adicione mais aqui se quiser)
-                    $badWords = [
-                        'merda', 'bosta', 'caralho', 'porra', 'puta', 'viado', 'corno',
-                        'buceta', 'pinto', 'cu', 'foder', 'imbecil', 'idiota', 'trouxa',
-                        'vagabundo', 'safado', 'inutil', 'burro'
-                    ];
-
-                    // Verifica se alguma palavra proibida está no texto (case insensitive)
-                    foreach ($badWords as $word) {
-                        // stripos encontra a posição da palavra ignorando maiúsculas/minúsculas
-                        if (stripos($value, $word) !== false) {
-                            $fail('Por favor, mantenha o respeito e evite palavras ofensivas.');
-                            return; // Para a verificação ao encontrar a primeira
-                        }
-                    }
-                },
-            ]
-        ]);
-
-        $authorName = $request->input('author_name', 'Convidado');
+        $request->validate(['content' => 'required|string|max:200']);
 
         $photo->comments()->create([
-            'author_name' => $authorName,
+            'author_name' => $request->input('author_name', 'Convidado'),
             'content' => $request->content
         ]);
 

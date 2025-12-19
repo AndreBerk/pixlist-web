@@ -1,42 +1,39 @@
 <x-guest-layout>
-    {{--
-        [VISUAL PREMIUM]
-        Fundo com "Spotlight": Luz radial no topo descendo para o preto.
-    --}}
     <div class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-gray-950 to-black text-gray-200 font-sans selection:bg-emerald-500 selection:text-white pb-20">
 
-        {{-- HEADER (Vidro Fosco) --}}
-        <div class="sticky top-0 z-40 w-full bg-slate-900/40 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
+        <style>
+            header, nav, .navbar { display: none !important; }
+            body { padding-top: 0 !important; }
+        </style>
 
-                    {{-- Botão Voltar --}}
-                    <a href="{{ route('list.public.show', $list) }}" class="p-2 -ml-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition group">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i>
-                            <span class="text-sm font-medium hidden sm:inline">Voltar</span>
-                        </div>
-                    </a>
+        {{-- BOTÕES FLUTUANTES --}}
+        <a href="{{ route('list.public.show', $list) }}" class="fixed top-4 left-4 z-50 p-3 bg-black/30 hover:bg-black/60 backdrop-blur-md rounded-full text-white transition group border border-white/5">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </a>
 
-                    {{-- Título Central --}}
-                    <div class="flex flex-col items-center">
-                        <span class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-bold text-shadow-sm opacity-80">Galeria VIP</span>
-                        <h1 class="text-white font-bold text-lg leading-none tracking-tight text-shadow-sm">{{ $list->display_name }}</h1>
-                    </div>
-
-                    {{-- Botão Upload (Topo) --}}
-                    <button onclick="document.getElementById('modalFoto').showModal()"
-                        class="p-2 -mr-2 rounded-full text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition flex items-center gap-2">
-                        <span class="text-sm font-bold hidden sm:inline">Postar</span>
-                        <i data-lucide="camera" class="w-6 h-6"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <button onclick="document.getElementById('modalFoto').showModal()" class="fixed top-4 right-4 z-50 p-3 bg-emerald-600/80 hover:bg-emerald-600 backdrop-blur-md rounded-full text-white shadow-lg transition border border-emerald-500/50">
+            <i data-lucide="camera" class="w-6 h-6"></i>
+        </button>
 
         {{-- STATUS DE FEEDBACK --}}
-        @if (session('status') === 'comentario-enviado')
+        {{-- Caso 1: Foto publicada instantaneamente --}}
+        @if (session('status') === 'foto-publicada')
             <div id="toast-success" class="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-emerald-600/90 backdrop-blur text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 animate-bounce-in border border-emerald-400/30">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span class="text-sm font-bold">Sucesso! Foto publicada.</span>
+            </div>
+        @endif
+
+        {{-- Caso 2: Foto foi para moderação --}}
+        @if (session('status') === 'foto-enviada')
+            <div id="toast-pending" class="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-blue-600/90 backdrop-blur text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 animate-bounce-in border border-blue-400/30">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                <span class="text-sm font-bold">Foto enviada para aprovação!</span>
+            </div>
+        @endif
+
+        @if (session('status') === 'comentario-enviado')
+            <div id="toast-comment" class="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-emerald-600/90 backdrop-blur text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 animate-bounce-in border border-emerald-400/30">
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                 <span class="text-sm font-bold">Comentário enviado!</span>
             </div>
@@ -49,11 +46,15 @@
             </div>
         @endif
 
-        {{-- GRID DE FOTOS (Mosaico) --}}
-        <main class="max-w-7xl mx-auto p-1 sm:p-4">
+        {{-- GRID DE FOTOS --}}
+        <main class="max-w-7xl mx-auto p-1 sm:p-4 pt-20">
+
+            <div class="text-center mb-8 opacity-60">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-bold">Galeria VIP</span>
+                <h1 class="text-white font-bold text-xl">{{ $list->display_name }}</h1>
+            </div>
 
             @if($photos->isEmpty())
-                {{-- Estado Vazio --}}
                 <div class="flex flex-col items-center justify-center py-32 text-center">
                     <div class="relative mb-6">
                         <div class="absolute inset-0 bg-emerald-500 blur-2xl opacity-20 rounded-full"></div>
@@ -68,7 +69,6 @@
                     </button>
                 </div>
             @else
-                {{-- Grid Responsivo --}}
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1 sm:gap-4">
                     @foreach($photos as $photo)
                         <div onclick="abrirStory({{ $photo->id }})" class="group relative aspect-square cursor-pointer overflow-hidden bg-slate-900 sm:rounded-lg border border-white/5 hover:border-white/20 transition-all duration-300">
@@ -77,7 +77,6 @@
                                  loading="lazy"
                                  alt="Foto de {{ $photo->guest_name }}">
 
-                            {{-- Overlay de Info --}}
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                                 <div class="flex items-center gap-4 text-white font-bold text-sm">
                                     <div class="flex items-center gap-1.5">
@@ -95,25 +94,18 @@
                         {{-- MODAL STORY --}}
                         <dialog id="story-{{ $photo->id }}" data-photo-id="{{ $photo->id }}" class="group/modal w-full h-full max-w-full max-h-full bg-transparent m-0 p-0 backdrop:bg-slate-950/95">
                             <div class="w-full h-full flex flex-col md:flex-row overflow-hidden">
-
                                 {{-- LADO ESQUERDO: FOTO --}}
                                 <div class="flex-1 bg-black/50 relative flex items-center justify-center overflow-hidden touch-none select-none">
-                                    {{-- Botões de Navegação (Desktop) --}}
                                     <button onclick="prevStory({{ $photo->id }})" class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/80 rounded-full items-center justify-center text-white transition z-50">
                                         <i data-lucide="chevron-left" class="w-8 h-8"></i>
                                     </button>
                                     <button onclick="nextStory({{ $photo->id }})" class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/80 rounded-full items-center justify-center text-white transition z-50">
                                         <i data-lucide="chevron-right" class="w-8 h-8"></i>
                                     </button>
-
-                                    {{-- Blur do fundo --}}
                                     <div class="absolute inset-0 opacity-40 blur-3xl scale-125 pointer-events-none">
                                         <img src="{{ asset('storage/' . $photo->photo_path) }}" class="w-full h-full object-cover">
                                     </div>
-
                                     <img src="{{ asset('storage/' . $photo->photo_path) }}" class="relative max-w-full max-h-[85vh] md:max-h-full object-contain shadow-2xl z-10 rounded-lg md:rounded-none">
-
-                                    {{-- Botão Fechar (Mobile) --}}
                                     <button onclick="document.getElementById('story-{{ $photo->id }}').close()" class="absolute top-4 left-4 p-2 bg-black/40 backdrop-blur-md rounded-full text-white md:hidden z-50 hover:bg-white/20 transition">
                                         <i data-lucide="x" class="w-6 h-6"></i>
                                     </button>
@@ -121,8 +113,6 @@
 
                                 {{-- LADO DIREITO: CHAT --}}
                                 <div class="w-full md:w-[400px] bg-slate-900 border-l border-white/5 flex flex-col h-[45vh] md:h-full shadow-2xl z-20 relative">
-
-                                    {{-- Header Post --}}
                                     <div class="p-4 border-b border-white/5 flex items-center gap-3 bg-slate-900 z-10 shrink-0">
                                         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 p-[2px]">
                                             <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-sm font-bold text-white uppercase">
@@ -138,7 +128,6 @@
                                         </button>
                                     </div>
 
-                                    {{-- Scroll Area --}}
                                     <div class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                                         @if($photo->message)
                                             <div class="flex gap-3 mb-6">
@@ -150,7 +139,6 @@
                                                 </div>
                                             </div>
                                         @endif
-
                                         @foreach($photo->comments as $comment)
                                             <div class="flex gap-3 group/comment">
                                                 <div class="flex-1">
@@ -161,7 +149,6 @@
                                                 </div>
                                             </div>
                                         @endforeach
-
                                         @if($photo->comments->isEmpty() && !$photo->message)
                                             <div class="h-full flex flex-col items-center justify-center text-slate-600 space-y-2 opacity-50 mt-10">
                                                 <i data-lucide="message-square" class="w-8 h-8"></i>
@@ -170,7 +157,6 @@
                                         @endif
                                     </div>
 
-                                    {{-- Ações --}}
                                     <div class="p-4 border-t border-white/5 bg-slate-900 z-20 shrink-0">
                                         <div class="flex items-center gap-4 mb-4">
                                             <button onclick="toggleLike({{ $photo->id }})" id="btn-like-{{ $photo->id }}" class="group/btn transition transform active:scale-90 focus:outline-none">
@@ -180,9 +166,7 @@
                                                 <i data-lucide="message-circle" class="w-7 h-7 text-slate-300 group-hover/btn:text-white"></i>
                                             </button>
                                         </div>
-
                                         <p class="text-sm font-bold text-white mb-4"><span id="likes-count-{{ $photo->id }}">{{ $photo->likes_count }}</span> curtidas</p>
-
                                         <form action="{{ route('photos.comment', $photo) }}" method="POST" class="flex gap-2 items-center bg-slate-800/50 rounded-full px-4 py-2 border border-slate-700 focus-within:border-slate-500 transition">
                                             @csrf
                                             <input type="hidden" name="author_name" value="Convidado">
@@ -198,7 +182,6 @@
             @endif
         </main>
 
-        {{-- MODAL UPLOAD FOTO --}}
         <dialog id="modalFoto" class="rounded-3xl p-0 w-full max-w-sm shadow-2xl backdrop:bg-slate-900/80">
             <form method="POST" action="{{ route('public.photos.store', $list) }}" enctype="multipart/form-data" class="bg-white p-6 sm:p-8">
                 @csrf
@@ -208,7 +191,6 @@
                         <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
                     </button>
                 </div>
-
                 <div class="space-y-5">
                     <div class="border-2 border-dashed border-emerald-100 bg-emerald-50/30 rounded-2xl p-8 text-center cursor-pointer relative group hover:bg-emerald-50 transition">
                         <input type="file" name="photo" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)">
@@ -220,7 +202,6 @@
                         </div>
                         <img id="image-preview" class="hidden w-full h-40 object-contain rounded-xl mx-auto shadow-md">
                     </div>
-
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Seu Nome</label>
@@ -231,28 +212,22 @@
                             <input type="text" name="message" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 text-sm transition" placeholder="Ex: Amamos a festa!">
                         </div>
                     </div>
-
                     <button type="submit" class="w-full py-3.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition shadow-lg flex items-center justify-center gap-2">
                         <i data-lucide="send" class="w-4 h-4"></i> Enviar para Galeria
                     </button>
                 </div>
             </form>
         </dialog>
-
     </div>
 
-    {{-- SCRIPTS (COM NAVEGAÇÃO NEXT/PREV E SWIPE) --}}
     <script>
-        // Array de IDs para navegação
         const photoOrder = @json($photos->pluck('id'));
 
         function abrirStory(id) {
             const modal = document.getElementById('story-' + id);
             if (!modal) return;
-
             modal.showModal();
             document.body.style.overflow = 'hidden';
-
             modal.addEventListener('close', () => { document.body.style.overflow = ''; }, { once: true });
         }
 
@@ -277,7 +252,6 @@
             }
         }
 
-        // Lógica de Swipe para Mobile
         function attachSwipe(modal, id) {
             let startX = null;
             modal.addEventListener('touchstart', e => startX = e.touches[0].clientX);
@@ -285,12 +259,8 @@
                 if(!startX) return;
                 const endX = e.changedTouches[0].clientX;
                 const diff = endX - startX;
-
-                // Swipe Left -> Next
                 if(diff < -50) nextStory(id);
-                // Swipe Right -> Prev
                 if(diff > 50) prevStory(id);
-
                 startX = null;
             });
         }
@@ -313,7 +283,6 @@
             const btn = document.getElementById('btn-like-' + photoId);
             const icon = btn.querySelector('svg');
             const counter = document.getElementById('likes-count-' + photoId);
-
             const isLiked = icon.classList.contains('text-red-500');
 
             btn.classList.add('scale-75');
@@ -343,23 +312,19 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) window.lucide.createIcons();
-
-            const toast = document.getElementById('toast-success');
-            if(toast) {
+            const toasts = document.querySelectorAll('[id^="toast-"]');
+            toasts.forEach(toast => {
                 setTimeout(() => {
                     toast.classList.add('opacity-0', '-translate-y-full');
                     setTimeout(() => toast.remove(), 500);
                 }, 3000);
-            }
-
-            // Ativar swipe em todos os modais
+            });
             document.querySelectorAll('dialog[id^="story-"]').forEach(modal => {
                 const id = parseInt(modal.dataset.photoId);
                 attachSwipe(modal, id);
             });
         });
     </script>
-
     <style>
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         @keyframes bounceIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }

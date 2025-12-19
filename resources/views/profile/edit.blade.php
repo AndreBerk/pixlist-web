@@ -1,16 +1,16 @@
-<x-admin-layout>
+<x-admin-layout title="Minha Conta">
     @php
         $hasList = isset($list) && $list;
         $planoAtivo = $hasList ? (bool)$list->plano_pago : false;
         $expiraEm = $hasList && $list->event_date ? \Carbon\Carbon::parse($list->event_date)->addDays(30)->format('d/m/Y') : null;
     @endphp
 
-    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6">Minha Conta</h2>
+    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-6">Minha Conta</h2>
 
-    <div class="bg-white rounded-xl shadow-lg border border-gray-100 max-w-4xl">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-100 dark:border-slate-700 max-w-4xl transition-colors duration-300">
 
         {{-- Tabs header (acessível) --}}
-        <div class="border-b border-gray-200">
+        <div class="border-b border-gray-200 dark:border-slate-700">
             <nav id="config-tabs"
                  class="-mb-px flex gap-2 sm:gap-6 px-2 sm:px-4"
                  role="tablist"
@@ -22,7 +22,7 @@
                         id="tab-pessoal-tab"
                         data-tab="tab-pessoal"
                         tabindex="0"
-                        class="tab-link active shrink-0 border-b-2 border-emerald-500 px-3 py-4 text-sm font-medium text-emerald-600 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t">
+                        class="tab-link active shrink-0 border-b-2 border-emerald-500 px-3 py-4 text-sm font-medium text-emerald-600 dark:text-emerald-400 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t transition-colors">
                     Dados Pessoais
                 </button>
 
@@ -33,7 +33,7 @@
                         id="tab-assinatura-tab"
                         data-tab="tab-assinatura"
                         tabindex="-1"
-                        class="tab-link shrink-0 border-b-2 border-transparent px-3 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t">
+                        class="tab-link shrink-0 border-b-2 border-transparent px-3 py-4 text-sm font-medium text-gray-500 dark:text-slate-400 hover:border-gray-300 dark:hover:border-slate-500 hover:text-gray-700 dark:hover:text-slate-200 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t transition-colors">
                     Minha Assinatura
                 </button>
 
@@ -44,7 +44,7 @@
                         id="tab-suporte-tab"
                         data-tab="tab-suporte"
                         tabindex="-1"
-                        class="tab-link shrink-0 border-b-2 border-transparent px-3 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t">
+                        class="tab-link shrink-0 border-b-2 border-transparent px-3 py-4 text-sm font-medium text-gray-500 dark:text-slate-400 hover:border-gray-300 dark:hover:border-slate-500 hover:text-gray-700 dark:hover:text-slate-200 focus:outline-none focus-visible:ring focus-visible:ring-emerald-300 rounded-t transition-colors">
                     Suporte
                 </button>
             </nav>
@@ -56,16 +56,23 @@
                      role="tabpanel"
                      aria-labelledby="tab-pessoal-tab"
                      class="config-tab-content active space-y-6">
-                <div class="p-4 sm:p-8 bg-gray-50 rounded-lg border border-gray-100">
-                    @include('profile.partials.update-profile-information-form')
+
+                <div class="p-4 sm:p-8 bg-gray-50 dark:bg-slate-700/30 rounded-lg border border-gray-100 dark:border-slate-600 transition-colors">
+                    <div class="dark:text-slate-300">
+                        @include('profile.partials.update-profile-information-form')
+                    </div>
                 </div>
 
-                <div class="p-4 sm:p-8 bg-gray-50 rounded-lg border border-gray-100">
-                    @include('profile.partials.update-password-form')
+                <div class="p-4 sm:p-8 bg-gray-50 dark:bg-slate-700/30 rounded-lg border border-gray-100 dark:border-slate-600 transition-colors">
+                    <div class="dark:text-slate-300">
+                        @include('profile.partials.update-password-form')
+                    </div>
                 </div>
 
-                <div class="p-4 sm:p-8 bg-gray-50 rounded-lg border border-gray-100">
-                    @include('profile.partials.delete-user-form')
+                <div class="p-4 sm:p-8 bg-gray-50 dark:bg-slate-700/30 rounded-lg border border-gray-100 dark:border-slate-600 transition-colors">
+                    <div class="dark:text-slate-300">
+                        @include('profile.partials.delete-user-form')
+                    </div>
                 </div>
             </section>
 
@@ -75,10 +82,10 @@
                      aria-labelledby="tab-assinatura-tab"
                      tabindex="0"
                      class="config-tab-content space-y-5">
-                <h3 class="text-xl font-bold text-gray-900">Plano da Lista</h3>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Plano da Lista</h3>
 
                 @if ($hasList && $planoAtivo)
-                    <div class="p-6 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg">
+                    <div class="p-6 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg transition-colors">
                         <p class="text-lg font-bold flex items-center gap-2">
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
                             Plano: Ativo
@@ -89,7 +96,7 @@
                         @endif
                     </div>
                 @elseif ($hasList && !$planoAtivo)
-                    <div class="p-6 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-lg">
+                    <div class="p-6 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-lg transition-colors">
                         <p class="text-lg font-bold flex items-center gap-2">
                             <i data-lucide="clock" class="w-5 h-5"></i>
                             Plano: Pendente
@@ -97,13 +104,13 @@
                         <p class="mt-1">Sua lista <span class="font-bold">"{{ $list->display_name }}"</span> ainda não foi ativada.</p>
                         <p>Para ativar e receber presentes, finalize o pagamento da taxa de ativação.</p>
                         <a href="{{ route('plano.index') }}"
-                           class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 focus:outline-none focus-visible:ring focus-visible:ring-yellow-300">
+                           class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-yellow-300 transition-colors">
                             Ativar meu plano agora
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </a>
                     </div>
                 @else
-                    <div class="p-6 bg-gray-100 text-gray-700 border border-gray-200 rounded-lg">
+                    <div class="p-6 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600 rounded-lg transition-colors">
                         <p>Você ainda não criou uma lista. Comece pelo Onboarding!</p>
                     </div>
                 @endif
@@ -115,17 +122,17 @@
                      aria-labelledby="tab-suporte-tab"
                      tabindex="0"
                      class="config-tab-content space-y-4">
-                <h3 class="text-xl font-bold text-gray-900">Precisa de Ajuda?</h3>
-                <p class="text-gray-700">Tem alguma dúvida ou encontrou um problema? Nossa equipe está pronta para ajudar.</p>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Precisa de Ajuda?</h3>
+                <p class="text-gray-700 dark:text-slate-300">Tem alguma dúvida ou encontrou um problema? Nossa equipe está pronta para ajudar.</p>
 
                 <a href="mailto:suporte@pixlist.com.br"
-                   class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-700 transition focus:outline-none focus-visible:ring focus-visible:ring-emerald-300">
+                   class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-700 dark:hover:bg-emerald-600 transition focus:outline-none focus-visible:ring focus-visible:ring-emerald-300">
                     <i data-lucide="mail" class="w-5 h-5"></i>
                     Enviar e-mail para o Suporte
                 </a>
 
-                <h4 class="text-lg font-bold text-gray-900 pt-4">Perguntas Frequentes (FAQ)</h4>
-                <div class="text-gray-700 space-y-3">
+                <h4 class="text-lg font-bold text-gray-900 dark:text-white pt-4">Perguntas Frequentes (FAQ)</h4>
+                <div class="text-gray-700 dark:text-slate-300 space-y-3">
                     <p>
                         <strong>P: Como eu recebo o dinheiro?</strong><br>
                         R: O valor é transferido via PIX diretamente para a chave que você cadastrou na página
@@ -143,17 +150,25 @@
     <style>
         .config-tab-content { display: none; }
         .config-tab-content.active { display: block; animation: pop .2s ease; }
+
+        /* Estilos ativos para modo claro */
         .tab-link.active {
-            border-color: #059669; /* emerald-500 */
-            color: #047857;        /* emerald-600 */
+            border-color: #059669;
+            color: #047857;
             font-weight: 600;
         }
+
+        /* Estilos ativos para modo escuro */
+        .dark .tab-link.active {
+            border-color: #34d399; /* emerald-400 */
+            color: #34d399;
+        }
+
         @keyframes pop { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
     </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // lucide
             if (window.lucide) window.lucide.createIcons();
 
             const tablist = document.getElementById('config-tabs');
@@ -182,7 +197,7 @@
                 btn.addEventListener('click', () => activateTab(btn));
             });
 
-            // teclado (setas / Home / End)
+            // teclado
             tablist.addEventListener('keydown', (e) => {
                 const currentIndex = tabButtons.findIndex(b => b.classList.contains('active'));
                 let nextIndex = currentIndex;

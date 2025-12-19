@@ -9,23 +9,33 @@ class EventPhoto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['list_id', 'photo_path', 'guest_name', 'message', 'is_approved'];
+    protected $table = 'event_photos';
 
-    // Relação com comentários
-    public function comments()
+    protected $fillable = [
+        'list_id',
+        'photo_path',
+        'guest_name',
+        'message',
+        'is_approved', // Essencial para a moderação funcionar
+    ];
+
+    protected $casts = [
+        'is_approved' => 'boolean',
+    ];
+
+    // Relacionamentos
+    public function list()
     {
-        return $this->hasMany(PhotoComment::class);
+        return $this->belongsTo(ListModel::class);
     }
 
-    // Relação com likes
     public function likes()
     {
         return $this->hasMany(PhotoLike::class);
     }
 
-    // Helper para saber se o usuário atual já deu like
-    public function getLikedAttribute()
+    public function comments()
     {
-        return $this->likes()->where('session_id', session()->getId())->exists();
+        return $this->hasMany(PhotoComment::class);
     }
 }

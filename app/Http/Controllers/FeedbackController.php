@@ -3,25 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Feedback; // Importamos o modelo
-use Illuminate\Support\Facades\Auth;
+use App\Models\Feedback;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {
     /**
      * Mostra a página do formulário de feedback.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        // Verifica se o utilizador já enviou um feedback recentemente
-        $existingFeedback = Feedback::where('user_id', Auth::id())
-                                  ->where('created_at', '>', now()->subDays(30))
-                                  ->exists();
+        // Verifica se o usuário enviou feedback nos últimos 30 dias
+        // (Lógica excelente para evitar spam)
+        $hasSentFeedback = Feedback::where('user_id', $request->user()->id)
+            ->where('created_at', '>', now()->subDays(30))
+            ->exists();
 
         return view('feedback', [
-            'hasSentFeedback' => $existingFeedback
+            'hasSentFeedback' => $hasSentFeedback
         ]);
     }
 
@@ -30,20 +31,23 @@ class FeedbackController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validação ajustada para bater com o formulário da View
         $validated = $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'message' => 'nullable|string|max:2000',
+            'type'    => 'required|string|in:sugestao,erro,elogio,outro', // O campo 'type' vem dos botões de opção
+            'message' => 'required|string|max:2000',
+            'rating'  => 'nullable|integer|min:1|max:5', // Deixamos opcional caso queira adicionar estrelas no futuro
         ], [
-            'rating.required' => 'Por favor, selecione uma nota (de 1 a 5 estrelas).'
+            'type.required'    => 'Por favor, selecione o tipo da mensagem.',
+            'message.required' => 'O campo de mensagem não pode ficar vazio.',
         ]);
 
         Feedback::create([
-            'user_id' => Auth::id(),
-            'rating' => $validated['rating'],
+            'user_id' => $request->user()->id,
+            'type'    => $validated['type'],
             'message' => $validated['message'],
+            'rating'  => $validated['rating'] ?? null, // Salva nulo se não tiver rating
         ]);
 
-        // Redireciona de volta com uma mensagem de sucesso
         return redirect()->route('feedback.create')
                          ->with('status', 'feedback-sent');
     }

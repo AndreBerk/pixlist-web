@@ -15,19 +15,20 @@ class DashboardController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $list = $user->list; // O middleware 'checklist' garante que isto existe
+        $list = $user->list;
 
         // Pega os dados que o dashboard precisa
         $totalArrecadado = $list->transactions()->sum('amount');
         $presentesRecebidos = $list->transactions()->count();
         $latestTransactions = $list->transactions()
-            ->with('gift') // 'gift' (minúsculo) é o nome da relação no modelo Transaction
+            ->with('gift')
             ->orderBy('created_at', 'desc')
-            ->take(3) // Pega só os 3 mais recentes
+            ->take(3)
             ->get();
 
-        // [LÓGICA DO TUTORIAL]
-        // Verifica a coluna que criámos
+        // [CORREÇÃO] A lógica deve ser: Se já viu, NÃO mostra.
+        // Se has_seen_dashboard_tutorial for 0 (false), mostramos.
+        // Se for 1 (true), escondemos.
         $showTutorial = !$user->has_seen_dashboard_tutorial;
 
         return view('dashboard', [
@@ -35,7 +36,7 @@ class DashboardController extends Controller
             'totalArrecadado' => $totalArrecadado,
             'presentesRecebidos' => $presentesRecebidos,
             'latestTransactions' => $latestTransactions,
-            'showTutorial' => $showTutorial, // Envia a variável para a view
+            'showTutorial' => $showTutorial,
         ]);
     }
 
@@ -45,9 +46,9 @@ class DashboardController extends Controller
     public function dismissTutorial(): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user->has_seen_dashboard_tutorial) {
-            $user->update(['has_seen_dashboard_tutorial' => true]);
-        }
+
+        // Marca como visto (true) para não aparecer mais
+        $user->forceFill(['has_seen_dashboard_tutorial' => true])->save();
 
         return redirect()->route('dashboard');
     }

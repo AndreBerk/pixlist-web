@@ -19,161 +19,196 @@
         $emTrial = $list->trial_expires_at &&
                    Carbon::parse($list->trial_expires_at)->isFuture();
     }
+
+    // Helper para classes de link
+    $linkClass = 'group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200';
+
+    // Classes Light / Dark
+    $inactiveClass = 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200';
+    $activeClass = 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold shadow-sm ring-1 ring-emerald-100 dark:ring-emerald-800';
 @endphp
 
-{{-- Seção de status do plano --}}
+{{--
+    =========================================================
+    STATUS DO PLANO (Compacto & Premium)
+    =========================================================
+--}}
 @if($list)
-    <div class="px-4 py-3 mb-3 rounded-lg border border-gray-100 bg-gray-50">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                @if ($planoAtivo)
-                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-                    <span class="text-sm font-medium text-emerald-700">Plano Ativo</span>
-                @elseif ($emTrial)
-                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
-                    <span class="text-sm font-medium text-amber-700">Em teste (7 dias)</span>
-                @else
-                    <i data-lucide="shield-off" class="w-4 h-4 text-red-600"></i>
-                    <span class="text-sm font-medium text-red-700">Plano Expirado</span>
-                @endif
+    <div class="px-4 mb-6">
+        <div class="p-4 rounded-2xl border transition-colors duration-300
+                    {{ $planoAtivo
+                        ? 'border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-900/20'
+                        : ($emTrial
+                            ? 'border-amber-100 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/20'
+                            : 'border-red-100 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/20')
+                    }}">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="p-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm">
+                    @if ($planoAtivo)
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                    @elseif ($emTrial)
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                    @else
+                        <i data-lucide="shield-alert" class="w-4 h-4 text-red-600 dark:text-red-400"></i>
+                    @endif
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wide
+                              {{ $planoAtivo
+                                  ? 'text-emerald-800 dark:text-emerald-300'
+                                  : ($emTrial
+                                      ? 'text-amber-800 dark:text-amber-300'
+                                      : 'text-red-800 dark:text-red-300')
+                              }}">
+                        {{ $planoAtivo ? 'Plano Premium' : ($emTrial ? 'Período Teste' : 'Expirado') }}
+                    </p>
+                    @if($emTrial)
+                        <p class="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Expira em breve</p>
+                    @endif
+                </div>
             </div>
 
             @unless($planoAtivo)
-                <a href="{{ route('plano.index') }}"
-                   class="text-xs font-semibold text-emerald-700 hover:text-emerald-800 underline underline-offset-2">
-                    Ativar
+                <a href="{{ route('plano.index') }}" class="block w-full py-1.5 text-xs text-center font-bold text-white rounded-lg shadow-sm transition-transform hover:scale-[1.02] active:scale-95
+                   {{ $emTrial ? 'bg-amber-500 hover:bg-amber-600' : 'bg-red-500 hover:bg-red-600' }}">
+                    Ativar Agora
                 </a>
             @endunless
         </div>
     </div>
 @endif
 
-{{-- Título de seção --}}
-<p class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-    Navegação
-</p>
+{{--
+    =========================================================
+    MENU DE NAVEGAÇÃO PRINCIPAL
+    =========================================================
+--}}
+<div class="px-4 space-y-8">
 
-<ul class="space-y-2">
-    <li>
-        <a href="{{ route('dashboard') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('dashboard') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
+    {{-- Grupo 1: Gestão do Evento --}}
+    <div>
+        <p class="px-2 mb-2 text-xs font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase">
+            Gestão do Evento
+        </p>
+        <ul class="space-y-1">
+            <li>
+                <a href="{{ route('dashboard') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Visão Geral</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('presentes.index') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('presentes.*') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="gift" class="w-5 h-5"></i>
-            <span>Gerenciar Presentes</span>
-        </a>
-    </li>
+            <li>
+                <a href="{{ route('presentes.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('presentes.*') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="gift" class="w-5 h-5 {{ request()->routeIs('presentes.*') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Presentes (Cotas)</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('extrato.index') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('extrato.index') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="receipt-text" class="w-5 h-5"></i>
-            <span>Extrato & Mensagens</span>
-        </a>
-    </li>
+            <li>
+                <a href="{{ route('extrato.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('extrato.index') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="receipt-text" class="w-5 h-5 {{ request()->routeIs('extrato.index') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Extrato Financeiro</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('rsvp.index') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('rsvp.index') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span>Lista de Convidados</span>
-        </a>
-    </li>
+            <li>
+                <a href="{{ route('despesas.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('despesas.*') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="receipt" class="w-5 h-5 {{ request()->routeIs('despesas.*') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Gestão de Despesas</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('photos.index') }}"
-        class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                hover:bg-emerald-50 hover:text-emerald-700 transition
-                {{ request()->routeIs('photos.index') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="camera" class="w-5 h-5"></i>
-            <span>Galeria de Fotos</span>
-        </a>
-    </li>
+            <li>
+                <a href="{{ route('rsvp.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('rsvp.index') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="users" class="w-5 h-5 {{ request()->routeIs('rsvp.index') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Convidados (RSVP)</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
-    {{-- [CORRIGIDO] O LINK DA ROLETA AGORA TEM ESTILO --}}
-    <li>
-        <a href="{{ route('gravata.edit') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('gravata.*') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="dices" class="w-5 h-5"></i>
-            <span>Roleta da Gravata</span>
-        </a>
-    </li>
+    {{-- Grupo 2: Extras & Configuração --}}
+    <div>
+        <p class="px-2 mb-2 text-xs font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase">
+            Personalização
+        </p>
+        <ul class="space-y-1">
+            <li>
+                <a href="{{ route('photos.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('photos.index') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="camera" class="w-5 h-5 {{ request()->routeIs('photos.index') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Galeria de Fotos</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('list.config.edit') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('list.config.edit') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="settings" class="w-5 h-5"></i>
-            <span>Configurar Página</span>
-        </a>
-    </li>
+            <li>
+                <a href="{{ route('gravata.edit') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('gravata.*') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="dices" class="w-5 h-5 {{ request()->routeIs('gravata.*') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Roleta da Gravata</span>
+                </a>
+            </li>
 
-    <li>
-        <a href="{{ route('list.share') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('list.share') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="share-2" class="w-5 h-5"></i>
-            <span>Compartilhar</span>
-        </a>
-    </li>
-</ul>
+            <li>
+                <a href="{{ route('vows.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('vows.*') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="book-heart" class="w-5 h-5 {{ request()->routeIs('vows.*') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Meus Votos</span>
+                </a>
+            </li>
 
-{{-- Segunda seção (Conta) --}}
-<p class="px-4 mt-6 mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-    Conta
-</p>
+            <li>
+                <a href="{{ route('list.config.edit') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('list.config.edit') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="settings-2" class="w-5 h-5 {{ request()->routeIs('list.config.edit') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Configurar Página</span>
+                </a>
+            </li>
 
-<ul class="space-y-2">
-    <li>
-        <a href="{{ route('profile.edit') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('profile.edit') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="user-cog" class="w-5 h-5"></i>
-            <span>Minha Conta</span>
-        </a>
-    </li>
-    <li>
-        <a href="{{ route('plano.index') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('plano.*') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="credit-card" class="w-5 h-5"></i>
-            <span>Plano e Pagamento</span>
+            <li>
+                <a href="{{ route('list.share') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('list.share') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="share-2" class="w-5 h-5 {{ request()->routeIs('list.share') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Compartilhar</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
-            @if(!$planoAtivo && $emTrial)
-                <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">Em Teste</span>
-            @elseif(!$planoAtivo && !$emTrial)
-                <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">Pendente</span>
-            @endif
-        </a>
-    </li>
+    {{-- Grupo 3: Minha Conta (Rodapé do menu) --}}
+    <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+        <ul class="space-y-1">
+            <li>
+                <a href="{{ route('plano.index') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('plano.*') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="credit-card" class="w-5 h-5 {{ request()->routeIs('plano.*') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span class="flex-1">Plano e Fatura</span>
+                    @if(!$planoAtivo && $emTrial)
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    @endif
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('profile.edit') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('profile.edit') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="user-circle" class="w-5 h-5 {{ request()->routeIs('profile.edit') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Minha Conta</span>
+                </a>
+            </li>
+             <li>
+                <a href="{{ route('feedback.create') }}"
+                   class="{{ $linkClass }} {{ request()->routeIs('feedback.create') ? $activeClass : $inactiveClass }}">
+                    <i data-lucide="message-square-plus" class="w-5 h-5 {{ request()->routeIs('feedback.create') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}"></i>
+                    <span>Ajuda & Feedback</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
-    <li>
-        <a href="{{ route('feedback.create') }}"
-           class="admin-nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 font-medium
-                  hover:bg-emerald-50 hover:text-emerald-700 transition
-                  {{ request()->routeIs('feedback.create') ? 'bg-emerald-50 text-emerald-700' : '' }}">
-            <i data-lucide="message-square-plus" class="w-5 h-5"></i>
-            <span>Enviar Feedback</span>
-        </a>
-    </li>
-</ul>
+</div>

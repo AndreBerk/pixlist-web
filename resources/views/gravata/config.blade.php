@@ -1,9 +1,9 @@
-<x-admin-layout>
+<x-admin-layout title="Configurar Roleta">
     <div class="max-w-4xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Configurar Roleta da Gravata</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Configurar Roleta da Gravata</h2>
 
-        <div class="bg-white rounded-xl shadow p-6 border border-gray-100">
-            <p class="text-gray-600 mb-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow p-6 border border-gray-100 dark:border-slate-700 transition-colors duration-300">
+            <p class="text-gray-600 dark:text-slate-400 mb-6">
                 Defina os valores que aparecerão na roleta. Adicione mais fatias para aumentar as chances de certos valores ou para criar uma roleta maior.
             </p>
 
@@ -13,17 +13,17 @@
                     @foreach($slices as $index => $slice)
                         <div class="slice-row flex items-center gap-3">
                             <div class="flex-1">
-                                <label class="text-xs font-bold text-gray-500 uppercase">Texto / Valor</label>
+                                <label class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Texto / Valor</label>
                                 <input type="text" name="slices[{{$index}}][label]" value="{{ $slice['label'] }}" required
-                                       class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
+                                       class="w-full rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-gray-500 uppercase">Cor</label>
+                                <label class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Cor</label>
                                 <input type="color" name="slices[{{$index}}][color]" value="{{ $slice['color'] }}"
-                                       class="h-10 w-16 p-1 rounded border border-gray-300 cursor-pointer block">
+                                       class="h-10 w-16 p-1 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 cursor-pointer block">
                             </div>
                             <div class="mt-5">
-                                <button type="button" onclick="removeSlice(this)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                                <button type="button" onclick="removeSlice(this)" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
                                     <i data-lucide="trash-2" class="w-5 h-5"></i>
                                 </button>
                             </div>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="mt-6 flex gap-3">
-                    <button type="button" onclick="addSlice()" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition flex items-center gap-2">
+                    <button type="button" onclick="addSlice()" class="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Fatia
                     </button>
                     <button type="submit" class="ml-auto px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition shadow-lg">
@@ -44,7 +44,7 @@
 
         {{-- Preview Button --}}
         <div class="mt-8 text-center">
-            <a href="{{ route('list.gravata', $list) }}" target="_blank" class="inline-flex items-center gap-2 text-emerald-600 font-bold hover:underline">
+            <a href="{{ route('list.gravata', $list) }}" target="_blank" class="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
                 <i data-lucide="play" class="w-4 h-4"></i> Testar o Jogo Agora
             </a>
         </div>
@@ -70,14 +70,14 @@
                 <div class="slice-row flex items-center gap-3 animate-bounce-in">
                     <div class="flex-1">
                         <input type="text" name="slices[${index}][label]" value="R$ 10" required
-                               class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
+                               class="w-full rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
                     </div>
                     <div>
                         <input type="color" name="slices[${index}][color]" value="${randomColor}"
-                               class="h-10 w-16 p-1 rounded border border-gray-300 cursor-pointer block">
+                               class="h-10 w-16 p-1 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 cursor-pointer block">
                     </div>
                     <div class="">
-                        <button type="button" onclick="removeSlice(this)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                        <button type="button" onclick="removeSlice(this)" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
                             <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </div>

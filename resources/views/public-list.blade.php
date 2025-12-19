@@ -1,4 +1,22 @@
 <x-guest-layout>
+    {{-- ==========================================
+         BIBLIOTECA SWIPER (CARROSSEL)
+    =========================================== --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    {{-- ==========================================
+         ESTILO PARA ESCONDER O HEADER PADRÃO
+    =========================================== --}}
+    <style>
+        header, nav, .navbar { display: none !important; }
+        body { padding-top: 0 !important; }
+
+        /* Ajuste dos pontos do carrossel para ficar verde */
+        .swiper-pagination-bullet-active {
+            background-color: #059669 !important; /* Emerald 600 */
+        }
+    </style>
+
     {{-- ===========================
          HERO (Capa + headline)
     ============================ --}}
@@ -76,7 +94,7 @@
                                 Presentear
                             </a>
 
-                            {{-- [REGRA] Botão de Foto (Estilo Glass) - Só se ativado --}}
+                            {{-- Botão de Foto (Estilo Glass) - Só se ativado --}}
                             @if($list->gallery_enabled)
                                 <button type="button" onclick="document.getElementById('modalFoto').showModal()"
                                     class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold text-lg hover:bg-white/20 hover:scale-105 transition transform flex items-center justify-center gap-2">
@@ -88,7 +106,7 @@
                             @if ($list->rsvp_enabled)
                                 <a href="#rsvp" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-emerald-900 font-bold text-lg shadow-lg hover:bg-gray-100 hover:scale-105 transition transform flex items-center justify-center gap-2">
                                     <i data-lucide="calendar-check" class="w-5 h-5"></i>
-                                    RSVP
+                                    Confirmar Presença
                                 </a>
                             @endif
                         </div>
@@ -97,41 +115,35 @@
             </div>
         </div>
 
-        {{-- INFO DO EVENTO (Cards flutuantes) --}}
+        {{-- INFO DO EVENTO (Barra Discreta - NOVA) --}}
         @if ($list->event_date || $list->event_location)
-            <div class="container mx-auto px-4 sm:px-6 -mt-16 relative z-20">
-                <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @if ($list->event_date)
-                        @php
-                            $eventDate = \Carbon\Carbon::parse($list->event_date);
-                            $googleLink = "https://www.google.com/calendar/render?action=TEMPLATE&text=" . urlencode($list->display_name) . "&dates=" . $eventDate->format('Ymd') . "/" . (clone $eventDate)->addDay()->format('Ymd');
-                        @endphp
-                        <a href="{{ $googleLink }}" target="_blank"
-                           class="group bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:border-emerald-200 hover:-translate-y-1 transition duration-300 flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-100 transition">
-                                <i data-lucide="calendar" class="w-7 h-7 text-emerald-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Data</p>
-                                <p class="text-lg font-bold text-gray-900">{{ $eventDate->translatedFormat('d \d\e F \d\e Y') }}</p>
-                                <p class="text-xs text-emerald-600 font-medium mt-1 group-hover:underline">Adicionar à agenda →</p>
-                            </div>
-                        </a>
-                    @endif
+            <div class="bg-white border-b border-gray-100 py-4 shadow-sm relative z-20">
+                <div class="container mx-auto px-4 sm:px-6">
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 text-sm text-gray-600">
 
-                    @if ($list->event_location)
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($list->event_location) }}" target="_blank"
-                           class="group bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:border-emerald-200 hover:-translate-y-1 transition duration-300 flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-100 transition">
-                                <i data-lucide="map-pin" class="w-7 h-7 text-emerald-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Local</p>
-                                <p class="text-lg font-bold text-gray-900 line-clamp-1">{{ $list->event_location }}</p>
-                                <p class="text-xs text-emerald-600 font-medium mt-1 group-hover:underline">Ver no mapa →</p>
-                            </div>
-                        </a>
-                    @endif
+                        @if ($list->event_date)
+                            @php
+                                $eventDate = \Carbon\Carbon::parse($list->event_date);
+                                $googleLink = "https://www.google.com/calendar/render?action=TEMPLATE&text=" . urlencode($list->display_name) . "&dates=" . $eventDate->format('Ymd') . "/" . (clone $eventDate)->addDay()->format('Ymd');
+                            @endphp
+                            <a href="{{ $googleLink }}" target="_blank" class="flex items-center gap-2 hover:text-emerald-600 transition group">
+                                <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i>
+                                <span class="font-medium">{{ $eventDate->translatedFormat('d \d\e F \d\e Y') }}</span>
+                            </a>
+                        @endif
+
+                        @if ($list->event_date && $list->event_location)
+                            <span class="hidden sm:block text-gray-300">|</span>
+                        @endif
+
+                        @if ($list->event_location)
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($list->event_location) }}" target="_blank" class="flex items-center gap-2 hover:text-emerald-600 transition group text-center sm:text-left">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-500"></i>
+                                <span class="font-medium">{{ $list->event_location }}</span>
+                            </a>
+                        @endif
+
+                    </div>
                 </div>
             </div>
         @endif
@@ -147,9 +159,6 @@
                         <span class="text-sm font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
                             {{ number_format($percentual, 0) }}% da meta
                         </span>
-                        <span class="text-sm font-medium text-gray-500">
-                            {{ number_format($totalArrecadado, 2, ',', '.') }} / {{ number_format($list->meta_goal, 2, ',', '.') }}
-                        </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
                         <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-4 rounded-full transition-all duration-1000 ease-out" style="width: {{ $percentual }}%"></div>
@@ -158,9 +167,7 @@
             </div>
         @endif
 
-        {{-- ========================================================
-             A CÁPSULA DA GALERIA (SÓ APARECE SE ATIVADO)
-        ======================================================== --}}
+        {{-- CÁPSULA DA GALERIA --}}
         @if($list->gallery_enabled)
         <div class="container mx-auto px-4 mt-12 mb-6" id="galeria-teaser">
             <div class="max-w-3xl mx-auto">
@@ -277,25 +284,51 @@
             </div>
         </div>
 
-        {{-- MURAL DE RECADOS (Simples) --}}
+        {{-- MURAL DE RECADOS (Carrossel Automático) --}}
         @if($transactions->count() > 0)
-        <div class="bg-gray-50 py-12 border-t border-gray-100">
+        <div class="bg-gray-50 py-16 border-t border-gray-100">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-6">
-                    <h3 class="text-lg font-bold text-gray-900">Mural de Recados</h3>
+                <div class="text-center mb-8">
+                    <div class="inline-block p-3 rounded-full bg-emerald-100 text-emerald-600 mb-3">
+                        <i data-lucide="message-circle-heart" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-gray-900">Mural de Recados</h3>
+                    <p class="text-gray-500 text-sm mt-1">Mensagens de carinho deixadas pelos convidados</p>
                 </div>
-                <div class="swiper-container max-w-xl mx-auto relative pb-8">
+
+                {{-- Container do Swiper --}}
+                <div class="swiper mySwiper max-w-2xl mx-auto pb-10">
                     <div class="swiper-wrapper">
                         @foreach ($transactions as $tx)
-                            <div class="swiper-slide px-4">
-                                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm text-center">
-                                    <p class="text-gray-600 text-sm italic leading-relaxed mb-3">"{{ $tx->guest_message ?: 'Um presente enviado com muito carinho!' }}"</p>
-                                    <p class="font-bold text-emerald-700 text-xs uppercase tracking-wide">— {{ $tx->guest_name ?: 'Anônimo' }}</p>
+                            <div class="swiper-slide h-auto">
+                                <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center h-full flex flex-col justify-center items-center relative">
+
+                                    {{-- Ícone de Aspas Decorativo --}}
+                                    <div class="absolute top-4 left-6 text-emerald-100">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" />
+                                        </svg>
+                                    </div>
+
+                                    <p class="text-gray-600 text-lg md:text-xl font-medium leading-relaxed italic mb-6 relative z-10">
+                                        "{{ $tx->guest_message ?: 'Um presente enviado com muito carinho!' }}"
+                                    </p>
+
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                            {{ strtoupper(substr($tx->guest_name ?: 'A', 0, 1)) }}
+                                        </div>
+                                        <div class="text-left">
+                                            <p class="font-bold text-gray-900 text-sm">{{ $tx->guest_name ?: 'Anônimo' }}</p>
+                                            <p class="text-xs text-gray-400">Enviou um presente</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                    <div class="swiper-pagination"></div>
+                    {{-- Paginação (Bolinhas) --}}
+                    <div class="swiper-pagination !-bottom-0"></div>
                 </div>
             </div>
         </div>
@@ -306,7 +339,7 @@
             <div class="bg-white py-16 border-t border-gray-100" id="rsvp">
                 <div class="container mx-auto px-4 max-w-md">
                     <div class="text-center mb-6">
-                        <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-widest">RSVP</span>
+                        <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-widest">Confirmar Presença</span>
                         <h3 class="text-2xl font-extrabold text-gray-900">Confirmar Presença</h3>
                     </div>
 
@@ -413,6 +446,8 @@
     </dialog>
     @endif
 
+    {{-- SCRIPTS NO FINAL DA PÁGINA --}}
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         function previewImage(input) {
             const preview = document.getElementById('image-preview');
@@ -445,17 +480,28 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Inicializa Ícones
             if (window.lucide) window.lucide.createIcons();
-            if (window.Swiper) {
-                new Swiper('.swiper-container', {
-                    autoplay: { delay: 5000, disableOnInteraction: false },
-                    loop: true,
-                    autoHeight: true,
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                    pagination: { el: '.swiper-pagination', clickable: true }
-                });
-            }
+
+            // Inicializa Carrossel (Swiper)
+            var swiper = new Swiper(".mySwiper", {
+                spaceBetween: 30,
+                centeredSlides: true,
+                loop: true,
+                autoHeight: true, // Ajusta altura automaticamente
+                autoplay: {
+                    delay: 4000, // Tempo de 4 segundos
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+            });
         });
     </script>
     <style>

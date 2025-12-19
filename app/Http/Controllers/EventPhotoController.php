@@ -17,16 +17,15 @@ class EventPhotoController extends Controller
     {
         $list = Auth::user()->list;
 
-        // Separa as fotos em duas coleções para facilitar a view
         $pendingPhotos = $list->photos()
-                              ->where('is_approved', false)
-                              ->orderBy('created_at', 'desc')
-                              ->get();
+            ->where('is_approved', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $approvedPhotos = $list->photos()
-                               ->where('is_approved', true)
-                               ->orderBy('created_at', 'desc')
-                               ->get();
+            ->where('is_approved', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('fotos', [
             'list' => $list,
@@ -41,25 +40,32 @@ class EventPhotoController extends Controller
     public function store(Request $request, ListModel $list)
     {
         $request->validate([
-            'photo'      => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Máx 5MB
+            'photo'      => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
             'guest_name' => 'nullable|string|max:255',
             'message'    => 'nullable|string|max:500',
         ]);
 
         if ($request->hasFile('photo')) {
-            // Salva na pasta 'event_photos' dentro do disco 'public'
             $path = $request->file('photo')->store('event_photos', 'public');
+
+            // ✅ RESPEITA CONFIGURAÇÃO DOS NOIVOS
+            // moderação ON -> pendente (false)
+            // moderação OFF -> aprovada (true)
+            $isApproved = !$list->moderation_enabled;
 
             EventPhoto::create([
                 'list_id'     => $list->id,
                 'photo_path'  => $path,
                 'guest_name'  => $request->guest_name,
                 'message'     => $request->message,
-                'is_approved' => false, // Sempre pendente por segurança
+                'is_approved' => $isApproved,
             ]);
         }
 
-        return redirect()->back()->with('status', 'foto-enviada');
+        return redirect()->back()->with(
+            'status',
+            $list->moderation_enabled ? 'foto-enviada' : 'foto-publicada'
+        );
     }
 
     /**
@@ -67,7 +73,6 @@ class EventPhotoController extends Controller
      */
     public function approve(Request $request, EventPhoto $photo)
     {
-        // Segurança: verifica se a foto pertence à lista do usuário logado
         if ($photo->list_id !== Auth::user()->list->id) {
             abort(403);
         }
@@ -86,12 +91,10 @@ class EventPhotoController extends Controller
             abort(403);
         }
 
-        // 1. Apaga o arquivo físico
         if (Storage::disk('public')->exists($photo->photo_path)) {
             Storage::disk('public')->delete($photo->photo_path);
         }
 
-        // 2. Apaga o registro no banco
         $photo->delete();
 
         return redirect()->back()->with('status', 'foto-removida');

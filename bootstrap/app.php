@@ -10,32 +10,43 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
     ->withMiddleware(function (Middleware $middleware) {
 
-        // 1. REGISTRA OS APELIDOS (ALIASES)
+        /*
+        |--------------------------------------------------------------------------
+        | ALIASES DE MIDDLEWARE (substitui o antigo Kernel.php)
+        |--------------------------------------------------------------------------
+        */
         $middleware->alias([
-            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
-            'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-            'can' => \Illuminate\Auth\Middleware\Authorize::class,
-            'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
-            'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-            // O nosso alias (este está correto)
-            'checklist' => \App\Http\Middleware\CheckListStatus::class,
+            // Auth padrão
+            'auth'               => \Illuminate\Auth\Middleware\Authenticate::class,
+            'auth.session'       => \Illuminate\Session\Middleware\AuthenticateSession::class,
+            'guest'              => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
+            'verified'           => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'password.confirm'   => \Illuminate\Auth\Middleware\RequirePassword::class,
+            'can'                => \Illuminate\Auth\Middleware\Authorize::class,
+            'throttle'           => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'cache.headers'      => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+
+            // Seus middlewares customizados
+            'terms.accepted' => \App\Http\Middleware\EnsureTermsAccepted::class,
+            'checklist' => \App\Http\Middleware\CheckListStatus::class, // Suponho que este já exista
         ]);
 
-        // =========================================================
-        // 2. A CORREÇÃO ESTÁ AQUI
-        // Adicionamos a exceção do CSRF para o Webhook
-        // =========================================================
+        /*
+        |--------------------------------------------------------------------------
+        | EXCEÇÕES DE CSRF
+        |--------------------------------------------------------------------------
+        */
         $middleware->validateCsrfTokens(except: [
-            '/webhook/mercadopago'
+            '/webhook/mercadopago',
         ]);
-
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+
+
+    ->create();

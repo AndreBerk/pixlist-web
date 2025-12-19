@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ListModel extends Model
 {
@@ -15,68 +13,70 @@ class ListModel extends Model
 
     protected $fillable = [
         'user_id',
-        'event_type',
         'display_name',
         'event_date',
+        'event_type',
         'style',
-        'meta_goal',
-        'cover_photo_url',
-        'story',
         'event_location',
+        'story',
         'pix_key',
+        'cover_photo_url',
         'rsvp_enabled',
-        'trial_expires_at',
         'gallery_enabled',
-
-        // --- CAMPOS FINANCEIROS ---
+        'moderation_enabled',
+        'meta_goal',
+        'roulette_config',
         'plano_pago',
         'plano_expires_at',
-
-        // --- CAMPO DA ROLETA (NOVO) ---
-        'roulette_config',
+        'trial_expires_at',
+        'vows_bride',
+        'vows_bride_pin',
+        'vows_groom',
+        'vows_groom_pin',
     ];
 
-    /**
-     * Casts: Converte dados automaticamente ao ler/salvar no banco.
-     * Essencial para datas e para o JSON da roleta.
-     */
     protected $casts = [
-        'event_date'       => 'date',
-        'trial_expires_at' => 'datetime',
+        'event_date' => 'date',
         'plano_expires_at' => 'datetime',
-        'plano_pago'       => 'boolean',
-        'rsvp_enabled'     => 'boolean',
-        'roulette_config'  => 'array',
+        'trial_expires_at' => 'datetime',
+        'rsvp_enabled' => 'boolean',
         'gallery_enabled' => 'boolean',
+        'moderation_enabled' => 'boolean',
+        'roulette_config' => 'array',
     ];
 
-    /* Relação: Pertence a um Usuário */
-    public function user(): BelongsTo
+    // ==========================================
+    // RELACIONAMENTOS
+    // ==========================================
+
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /* Relação: Tem Muitos Presentes */
-    public function gifts(): HasMany
+    public function photos()
     {
-        return $this->hasMany(Gift::class, 'list_id');
+        return $this->hasMany(EventPhoto::class, 'list_id');
     }
 
-    /* Relação: Tem Muitas Transações (Extrato) */
-    public function transactions(): HasMany
-    {
-        return $this->hasMany(Transaction::class, 'list_id');
-    }
-
-    /* Relação: Tem Muitas Confirmações de Presença */
-    public function rsvps(): HasMany
+    public function rsvps()
     {
         return $this->hasMany(Rsvp::class, 'list_id');
     }
 
-    /* Relação: Tem Muitas Fotos (Galeria) */
-    public function photos(): HasMany
+    public function transactions()
     {
-        return $this->hasMany(EventPhoto::class, 'list_id');
+        return $this->hasMany(Transaction::class, 'list_id');
+    }
+
+    public function gifts()
+    {
+        return $this->hasMany(Gift::class, 'list_id');
+    }
+
+    // <--- ADICIONE ISTO AQUI
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class, 'list_id');
     }
 }

@@ -1,58 +1,156 @@
 <x-admin-layout>
-    <div class="max-w-md mx-auto">
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
 
-            <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Quase lá!</h2>
-            <p class="text-gray-600 text-lg mb-6">
-                Escaneie o QR Code ou use o "Copia e Cola" para ativar o plano de R$ {{ number_format($amount, 2, ',', '.') }}.
-            </p>
+    {{-- Container Centralizado --}}
+    <div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full">
 
-            {{-- QR Code --}}
-            <div class="p-4 border border-gray-200 rounded-lg inline-block bg-white">
-                <img src="data:image/png;base64, {{ $qrCodeBase64 }}" alt="QR Code PIX" class="w-64 h-64">
-            </div>
+            {{-- Cartão Principal --}}
+            <div class="bg-white rounded-3xl shadow-2xl shadow-emerald-900/10 border border-slate-100 overflow-hidden relative">
 
-            {{-- Copia e Cola --}}
-            <div class="mt-6">
-                <label for="pix-copia-cola" class="text-sm font-medium text-gray-700">PIX Copia e Cola</label>
-                <div class="relative mt-1">
-                    <textarea id="pix-copia-cola" rows="3" readonly class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-xs text-gray-600 focus:ring-0 focus:border-gray-300 resize-none">{{ $qrCodeCopyPaste }}</textarea>
+                {{-- Barra de Progresso (Visual para o reload) --}}
+                <div class="h-1 w-full bg-slate-100">
+                    <div class="h-full bg-emerald-500 animate-[progress_5s_linear_infinite]"></div>
                 </div>
-                
-                <button onclick="copiarPix()" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-emerald-100 text-emerald-700 font-bold hover:bg-emerald-200 transition text-sm">
-                    <i data-lucide="copy" class="w-4 h-4"></i> Copiar Código
-                </button>
-            </div>
 
-             <div class="mt-8 text-center">
-                 <a href="{{ route('plano.index') }}" class="text-sm text-gray-500 hover:text-gray-700">&larr; Cancelar</a>
-             </div>
-             
-             <div class="mt-4 text-xs text-gray-400">
-                 A página atualizará automaticamente assim que o pagamento for confirmado.
-             </div>
+                {{-- Cabeçalho Estilo "Ticket" --}}
+                <div class="bg-slate-900 p-8 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-transparent"></div>
+
+                    <div class="relative z-10">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mb-4 ring-1 ring-emerald-500/50">
+                            <i data-lucide="qr-code" class="w-6 h-6"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">Pagamento via PIX</h2>
+                        <p class="text-slate-400 text-sm mt-1">Escaneie ou copie o código abaixo</p>
+
+                        <div class="mt-6">
+                            <span class="text-slate-400 text-xs uppercase tracking-wider font-bold">Valor a pagar</span>
+                            <div class="text-4xl font-extrabold text-white tracking-tight mt-1">
+                                R$ {{ number_format($amount, 2, ',', '.') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Corpo do Cartão --}}
+                <div class="p-8">
+
+                    {{-- Área do QR Code --}}
+                    <div class="flex justify-center mb-8">
+                        <div class="p-3 bg-white border-2 border-slate-100 rounded-2xl shadow-sm relative group">
+                            {{-- [Image of QR code scanner overlay] --}}
+                            <div class="absolute inset-0 border-[3px] border-emerald-500/0 rounded-xl group-hover:border-emerald-500/10 transition-colors pointer-events-none"></div>
+                            <img src="data:image/png;base64, {{ $qrCodeBase64 }}"
+                                 alt="QR Code PIX"
+                                 class="w-56 h-56 object-contain rounded-lg mix-blend-multiply">
+                        </div>
+                    </div>
+
+                    {{-- Área Copia e Cola --}}
+                    <div class="space-y-3">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">
+                            Pix Copia e Cola
+                        </label>
+
+                        <div class="relative group">
+                            <input type="text" id="pix-copia-cola" readonly value="{{ $qrCodeCopyPaste }}"
+                                class="w-full bg-slate-50 border border-slate-200 text-slate-600 text-xs font-mono rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all truncate"
+                                onclick="copiarPix()">
+
+                            <button onclick="copiarPix()" class="absolute right-2 top-2 p-1.5 text-slate-400 hover:text-emerald-600 bg-white hover:bg-emerald-50 rounded-lg border border-slate-200 hover:border-emerald-200 transition-all shadow-sm">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <button id="btn-copy-main" onclick="copiarPix()"
+                            class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                            <i data-lucide="copy" class="w-5 h-5"></i>
+                            <span>Copiar Código PIX</span>
+                        </button>
+                    </div>
+
+                    {{-- Footer / Status --}}
+                    <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+                        <div class="inline-flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 py-2 px-4 rounded-full mb-4">
+                             <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                             <span class="text-xs font-bold uppercase tracking-wide">Aguardando confirmação automática</span>
+                        </div>
+
+                        <div>
+                             <a href="{{ route('plano.index') }}" class="text-sm text-slate-400 hover:text-red-500 transition-colors">
+                                Cancelar transação
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    {{-- Toast Notification (Aviso Bonito) --}}
+    <div id="toast-success" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 z-50">
+        <div class="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <div class="bg-emerald-500 rounded-full p-1">
+                <i data-lucide="check" class="w-3 h-3 text-white"></i>
+            </div>
+            <span class="font-medium text-sm">Código PIX copiado!</span>
+        </div>
+    </div>
+
+    <style>
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+
     <script>
         function copiarPix() {
-            const textarea = document.getElementById('pix-copia-cola');
-            textarea.select();
-            textarea.setSelectionRange(0, 99999); // Mobile
-            try {
-                navigator.clipboard.writeText(textarea.value);
-                alert('Código PIX copiado!');
-            } catch (err) {
+            const input = document.getElementById('pix-copia-cola');
+            const btnMain = document.getElementById('btn-copy-main');
+            const originalBtnContent = btnMain.innerHTML;
+
+            // Seleciona e copia
+            input.select();
+            input.setSelectionRange(0, 99999); // Mobile fix
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(input.value);
+                showFeedback();
+            } else {
                 document.execCommand('copy');
-                alert('Código PIX copiado!');
+                showFeedback();
+            }
+
+            function showFeedback() {
+                // 1. Muda o botão principal visualmente
+                btnMain.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                btnMain.classList.add('bg-slate-800', 'text-white');
+                btnMain.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> <span>Copiado!</span>';
+
+                // 2. Mostra o Toast
+                const toast = document.getElementById('toast-success');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+
+                // 3. Reseta após 2 segundos
+                setTimeout(() => {
+                    btnMain.innerHTML = originalBtnContent;
+                    btnMain.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    btnMain.classList.remove('bg-slate-800', 'text-white');
+
+                    toast.classList.add('translate-y-20', 'opacity-0');
+
+                    // Reinicializa ícones Lucide caso eles tenham sido removidos do DOM
+                    if(window.lucide) window.lucide.createIcons();
+                }, 2000);
             }
         }
 
-        // VERIFICAÇÃO AUTOMÁTICA (A cada 10 segundos)
-        // Simplesmente recarrega a página. Se pagou, o middleware manda pro Dashboard.
+        // VERIFICAÇÃO AUTOMÁTICA (Mantida a lógica de reload por enquanto)
+        // Adicionamos a barra de progresso CSS para o usuário entender por que a tela recarrega
         setTimeout(function() {
             window.location.reload();
-        }, 10000);
+        }, 5000);
 
         document.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) window.lucide.createIcons();

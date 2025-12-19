@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ListModel;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail; // Importante para o E-mail
-use App\Mail\PlanActivated;          // Importante para o E-mail
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PlanActivated;
 
 // Mercado Pago SDK
 use MercadoPago\MercadoPagoConfig;
@@ -18,7 +18,7 @@ class PaymentController extends Controller
     /**
      * PASSO 1: Criar o pagamento PIX e mostrar pro usuário
      */
-    public function createPayment(Request $request)
+    public function createPreference(Request $request) // Mudei o nome para bater com a rota se necessário, mas 'createPayment' também serve
     {
         $list = $request->user()->list;
 
@@ -29,7 +29,7 @@ class PaymentController extends Controller
                 ->with('status', 'Seu plano já está ativo!');
         }
 
-        $paymentAmount = 39.90;// Valor do Plano
+        $paymentAmount = 24.90; // Valor do Plano
 
         try {
             // 1. Configurar credencial
@@ -46,10 +46,9 @@ class PaymentController extends Controller
                 'payer' => [
                     'email' => $request->user()->email,
                     'first_name' => $request->user()->name,
-                    // Alguns bancos pedem identificação
                     'identification' => [
                         'type' => 'CPF',
-                        'number' => '19100000000' // CPF Genérico para facilitar, ou peça no cadastro
+                        'number' => '19100000000' // CPF Genérico apenas para o MP aceitar a request
                     ]
                 ],
                 'notification_url' => route('webhook.mercadopago'),
@@ -78,12 +77,12 @@ class PaymentController extends Controller
             $content = $apiResponse ? $apiResponse->getContent() : null;
             Log::error('Erro API MP:', ['msg' => $e->getMessage(), 'body' => $content]);
 
-            return redirect()->route('plano.index')->withErrors(['msg' => 'Erro ao conectar com Mercado Pago. Tente novamente.']);
+            return redirect()->route('plano.index')->withErrors(['msg' => 'Erro ao conectar com o Mercado Pago. Por favor, tente novamente em instantes.']);
 
         } catch (\Exception $e) {
             // Erros gerais
             Log::error('Erro Geral Pagamento: '.$e->getMessage());
-            return redirect()->route('plano.index')->withErrors(['msg' => 'Ocorreu um erro inesperado.']);
+            return redirect()->route('plano.index')->withErrors(['msg' => 'Ocorreu um erro inesperado ao processar o pagamento.']);
         }
     }
 
@@ -109,8 +108,8 @@ class PaymentController extends Controller
         $manifest = "id:{$request->input('data.id')};request-id:$xRequestId;ts:$ts;";
         $hmac = hash_hmac('sha256', $manifest, $secret);
 
-        // Nota: Em produção rigorosa, descomente o IF abaixo para bloquear ataques.
-        // if ($v1 !== $hmac) { Log::warning('Assinatura inválida'); return response()->json(['error' => 'Invalid'], 403); }
+        // Em produção, descomente para validar a assinatura real do MP
+        // if ($v1 !== $hmac) { return response()->json(['error' => 'Invalid Signature'], 403); }
 
         // --- Processamento ---
         $topic = $request->input('type') ?? $request->input('topic');
@@ -123,11 +122,11 @@ class PaymentController extends Controller
                 $client = new PaymentClient();
                 $payment = $client->get($paymentId);
 
-                // Verifica se APROVADO e valor correto
-                if ($payment->status === 'approved' && (float)$payment->transaction_amount >= 39.90) {
+                // Verifica se APROVADO e valor correto (maior ou igual)
+                if ($payment->status === 'approved' && (float)$payment->transaction_amount >= 24.90) {
 
                     $listId = $payment->external_reference;
-                    $list = ListModel::with('user')->find($listId); // Carrega user para o e-mail
+                    $list = ListModel::with('user')->find($listId);
 
                     // Se a lista existe e ainda não está paga
                     if ($list && !$list->plano_pago) {
@@ -143,10 +142,8 @@ class PaymentController extends Controller
                         // 2. ENVIA O E-MAIL DE BOAS-VINDAS
                         try {
                             Mail::to($list->user->email)->send(new PlanActivated($list));
-                            Log::info("E-mail enviado para: " . $list->user->email);
                         } catch (\Exception $e) {
                             Log::error("Falha ao enviar e-mail: " . $e->getMessage());
-                            // Não paramos o fluxo, o importante é ter ativado o plano.
                         }
                     }
                 }
@@ -156,19 +153,5 @@ class PaymentController extends Controller
         }
 
         return response()->json(['status' => 'ok'], 200);
-    }
-
-    /**
-     * PASSO 3: Tela de Sucesso (Acessada se o JS recarregar a página)
-     */
-    public function paymentSuccess(Request $request)
-    {
-        $list = $request->user()->list;
-
-        if ($list->plano_pago) {
-            return view('plano.sucesso');
-        }
-
-        return redirect()->route('plano.index')->with('status', 'pagamento-processando');
     }
 }
