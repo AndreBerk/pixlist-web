@@ -1,454 +1,429 @@
 <x-guest-layout>
-    {{-- ==========================================
-         BIBLIOTECA SWIPER (CARROSSEL)
-    =========================================== --}}
+    {{--
+       BIBLIOTECAS E ESTILOS GERAIS
+    --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-    {{-- ==========================================
-         ESTILO PARA ESCONDER O HEADER PADRÃO
-    =========================================== --}}
     <style>
+        /* Esconde header padrão do layout */
         header, nav, .navbar { display: none !important; }
-        body { padding-top: 0 !important; }
+        body { padding-top: 0 !important; background-color: #f9fafb; }
 
-        /* Ajuste dos pontos do carrossel para ficar verde */
-        .swiper-pagination-bullet-active {
-            background-color: #059669 !important; /* Emerald 600 */
-        }
+        /* Ajustes Swiper (Carrossel) */
+        .swiper-pagination-bullet-active { background-color: #059669 !important; }
+
+        /* Previne zoom em inputs no iOS */
+        input, textarea, select { font-size: 16px !important; }
+
+        /* Rolagem suave */
+        html { scroll-behavior: smooth; }
     </style>
 
-    {{-- ===========================
-         HERO (Capa + headline)
-    ============================ --}}
-    <section id="page-lista-publica" class="relative">
+    <section id="page-lista-publica" class="relative pb-24"> {{-- Padding bottom para não esconder conteúdo atrás do menu fixo --}}
 
-        {{-- Alertas (pós-ação) --}}
-        <div class="container mx-auto px-4 sm:px-6 mt-4 sm:mt-6 fixed top-0 inset-x-0 z-50 pointer-events-none">
-            <div class="max-w-4xl mx-auto space-y-3 pointer-events-auto">
+        {{--
+           1. ALERTAS FLUTUANTES (Toast Notifications)
+        --}}
+        <div class="fixed top-4 left-0 right-0 z-[60] px-4 pointer-events-none">
+            <div class="max-w-md mx-auto space-y-2 pointer-events-auto">
                 @if (session('status') === 'pagamento-sucesso')
-                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl shadow-lg flex items-center gap-3 animate-bounce-in">
-                        <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600"></i>
+                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-bounce-in">
+                        <div class="bg-emerald-100 p-2 rounded-full"><i data-lucide="check" class="w-5 h-5 text-emerald-600"></i></div>
                         <div>
-                            <p class="font-bold">Obrigado!</p>
-                            <p class="text-sm">Seu presente foi registrado com sucesso.</p>
+                            <p class="font-bold text-sm">Sucesso!</p>
+                            <p class="text-xs">Seu presente foi registrado.</p>
                         </div>
                     </div>
                 @endif
-
                 @if (session('status') === 'foto-enviada')
-                    <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl shadow-lg flex items-center gap-3 animate-bounce-in">
-                        <i data-lucide="camera" class="w-6 h-6 text-blue-600"></i>
+                    <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-bounce-in">
+                        <div class="bg-blue-100 p-2 rounded-full"><i data-lucide="camera" class="w-5 h-5 text-blue-600"></i></div>
                         <div>
-                            <p class="font-bold">Foto enviada!</p>
-                            <p class="text-sm">Ela aparecerá na galeria assim que os noivos aprovarem.</p>
+                            <p class="font-bold text-sm">Foto enviada!</p>
+                            <p class="text-xs">Aguardando aprovação.</p>
                         </div>
                     </div>
                 @endif
-
                 @if (session('status') === 'rsvp-success')
-                    <div class="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl shadow-lg flex items-center gap-3 animate-bounce-in">
-                        <i data-lucide="party-popper" class="w-6 h-6 text-purple-600"></i>
+                    <div class="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-bounce-in">
+                        <div class="bg-purple-100 p-2 rounded-full"><i data-lucide="party-popper" class="w-5 h-5 text-purple-600"></i></div>
                         <div>
-                            <p class="font-bold">Presença confirmada!</p>
-                            <p class="text-sm">Esperamos você lá.</p>
+                            <p class="font-bold text-sm">Confirmado!</p>
+                            <p class="text-xs">Esperamos você lá.</p>
                         </div>
                     </div>
                 @endif
             </div>
         </div>
 
-        {{-- Hero com imagem de fundo --}}
-        <div class="relative w-full h-[420px] md:h-[580px] overflow-hidden">
+        {{--
+           2. HERO SECTION (CAPA)
+           - Altura dinâmica (min-h) para caber bem em celulares.
+           - Título responsivo.
+        --}}
+        <div class="relative w-full h-[65vh] md:h-[600px] overflow-hidden">
             @if($list->cover_photo_url)
                 <img src="{{ asset('storage/' . $list->cover_photo_url) }}"
-                     alt="Foto de capa da lista"
-                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 hover:scale-105">
+                     class="absolute inset-0 w-full h-full object-cover animate-fade-in">
             @else
                 <div class="absolute inset-0 bg-gradient-to-br from-emerald-800 via-emerald-600 to-teal-500"></div>
             @endif
 
-            {{-- Gradiente Overlay para leitura --}}
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30"></div>
+            {{-- Gradiente Escuro para Leitura --}}
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10"></div>
 
-            <div class="relative z-10 h-full flex items-center justify-center text-center">
-                <div class="container mx-auto px-4 sm:px-6">
-                    <div class="max-w-4xl mx-auto text-white">
+            <div class="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:justify-center text-center px-6">
 
-                        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 mb-6 shadow-sm">
-                            <i data-lucide="gift" class="w-4 h-4 text-emerald-300"></i>
-                            <span class="text-xs font-bold tracking-widest uppercase text-emerald-100">Lista de Presentes</span>
-                        </div>
+                {{-- Badge --}}
+                <div class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 mb-4 shadow-sm">
+                    <i data-lucide="gift" class="w-3 h-3 text-emerald-300"></i>
+                    <span class="text-[10px] font-bold tracking-widest uppercase text-emerald-100">Lista de Presentes</span>
+                </div>
 
-                        <h1 id="tituloPublico" class="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-tight drop-shadow-lg">
-                            {{ $list->display_name }}
-                        </h1>
+                {{-- Título e História --}}
+                <h1 class="text-3xl sm:text-5xl md:text-7xl font-black leading-tight tracking-tight text-white drop-shadow-lg mb-3">
+                    {{ $list->display_name }}
+                </h1>
 
-                        <p class="text-lg sm:text-xl text-gray-200 mt-6 max-w-2xl mx-auto leading-relaxed font-light">
-                            {{ $list->story ?: 'Obrigado por celebrar conosco este momento tão especial.' }}
-                        </p>
+                <p class="text-sm sm:text-lg text-gray-200 max-w-lg mx-auto leading-relaxed font-light line-clamp-3 md:line-clamp-none">
+                    {{ $list->story ?: 'Bem-vindos à nossa lista de presentes virtual.' }}
+                </p>
 
-                        {{-- BOTÕES DE AÇÃO DO HERO --}}
-                        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <a href="#presentes" class="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-500 text-white font-bold text-lg shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-105 transition transform flex items-center justify-center gap-2">
-                                <i data-lucide="gift" class="w-5 h-5"></i>
-                                Presentear
-                            </a>
-
-                            {{-- Botão de Foto (Estilo Glass) - Só se ativado --}}
-                            @if($list->gallery_enabled)
-                                <button type="button" onclick="document.getElementById('modalFoto').showModal()"
-                                    class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold text-lg hover:bg-white/20 hover:scale-105 transition transform flex items-center justify-center gap-2">
-                                    <i data-lucide="camera" class="w-5 h-5"></i>
-                                    Postar Foto
-                                </button>
-                            @endif
-
-                            @if ($list->rsvp_enabled)
-                                <a href="#rsvp" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-emerald-900 font-bold text-lg shadow-lg hover:bg-gray-100 hover:scale-105 transition transform flex items-center justify-center gap-2">
-                                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
-                                    Confirmar Presença
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+                {{-- Botão CTA Principal (Mobile) --}}
+                <div class="mt-8 w-full max-w-xs md:hidden">
+                    <a href="#presentes" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3.5 font-bold text-white shadow-lg shadow-emerald-900/20 active:scale-95 transition">
+                        <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                        Ver Presentes
+                    </a>
                 </div>
             </div>
         </div>
 
-        {{-- INFO DO EVENTO (Barra Discreta - NOVA) --}}
+        {{--
+           3. BARRA DE INFORMAÇÕES (Data e Local)
+        --}}
         @if ($list->event_date || $list->event_location)
-            <div class="bg-white border-b border-gray-100 py-4 shadow-sm relative z-20">
-                <div class="container mx-auto px-4 sm:px-6">
-                    <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 text-sm text-gray-600">
+            <div class="bg-white border-b border-gray-100 py-3 shadow-sm sticky z-20 top-0">
+                <div class="container mx-auto px-4 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-600">
 
-                        @if ($list->event_date)
-                            @php
-                                $eventDate = \Carbon\Carbon::parse($list->event_date);
-                                $googleLink = "https://www.google.com/calendar/render?action=TEMPLATE&text=" . urlencode($list->display_name) . "&dates=" . $eventDate->format('Ymd') . "/" . (clone $eventDate)->addDay()->format('Ymd');
-                            @endphp
-                            <a href="{{ $googleLink }}" target="_blank" class="flex items-center gap-2 hover:text-emerald-600 transition group">
-                                <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i>
-                                <span class="font-medium">{{ $eventDate->translatedFormat('d \d\e F \d\e Y') }}</span>
+                    @if ($list->event_date)
+                        @php $eventDate = \Carbon\Carbon::parse($list->event_date); @endphp
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i>
+                            <span class="font-semibold text-gray-800">{{ $eventDate->translatedFormat('d \d\e F \d\e Y') }}</span>
+                        </div>
+                    @endif
+
+                    @if ($list->event_location)
+                        <div class="flex items-center gap-2 text-center line-clamp-1">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                            <a href="https://maps.google.com/?q={{ urlencode($list->event_location) }}" target="_blank" class="underline decoration-dotted decoration-gray-400">
+                                {{ $list->event_location }}
                             </a>
-                        @endif
-
-                        @if ($list->event_date && $list->event_location)
-                            <span class="hidden sm:block text-gray-300">|</span>
-                        @endif
-
-                        @if ($list->event_location)
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($list->event_location) }}" target="_blank" class="flex items-center gap-2 hover:text-emerald-600 transition group text-center sm:text-left">
-                                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-500"></i>
-                                <span class="font-medium">{{ $list->event_location }}</span>
-                            </a>
-                        @endif
-
-                    </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
 
-        {{-- BARRA DE META --}}
+        {{--
+           4. BARRA DE PROGRESSO (Meta)
+        --}}
         @if($list->meta_goal > 0)
-            @php
-                $percentual = ($list->meta_goal > 0) ? min(100, ($totalArrecadado / $list->meta_goal) * 100) : 0;
-            @endphp
-            <div class="container mx-auto px-4 sm:px-6 mt-12">
-                <div class="max-w-2xl mx-auto">
+            @php $percentual = min(100, ($totalArrecadado / $list->meta_goal) * 100); @endphp
+            <div class="container mx-auto px-4 mt-8">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
                     <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
-                            {{ number_format($percentual, 0) }}% da meta
-                        </span>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Meta dos Noivos</span>
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">{{ number_format($percentual, 0) }}%</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-4 rounded-full transition-all duration-1000 ease-out" style="width: {{ $percentual }}%"></div>
+                    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-1000" style="width: {{ $percentual }}%"></div>
                     </div>
                 </div>
             </div>
         @endif
 
-        {{-- CÁPSULA DA GALERIA --}}
+        {{--
+           5. TEASER DA GALERIA (Só aparece se tiver galeria)
+        --}}
         @if($list->gallery_enabled)
-        <div class="container mx-auto px-4 mt-12 mb-6" id="galeria-teaser">
-            <div class="max-w-3xl mx-auto">
-                <div class="bg-gray-900 rounded-2xl shadow-xl p-1 flex items-center justify-between transform transition hover:scale-[1.01] hover:shadow-2xl">
+        <div class="container mx-auto px-4 mt-6">
+            <div class="max-w-2xl mx-auto bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-4 flex items-center justify-between text-white relative overflow-hidden group">
+                <div class="absolute right-0 top-0 h-full w-1/3 bg-white/5 skew-x-12"></div>
 
-                    <a href="{{ route('list.gallery', $list) }}" class="flex items-center gap-4 px-4 py-3 flex-1 group">
-                        <div class="relative">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg group-hover:rotate-12 transition">
-                                <i data-lucide="camera" class="w-5 h-5"></i>
-                            </div>
-                            @if(isset($photos) && $photos->count() > 0)
-                                <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-                                  <span class="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm leading-tight">Galeria da Festa</h3>
+                        <p class="text-[10px] text-gray-300">Poste sua foto aqui!</p>
+                    </div>
+                </div>
+
+                <a href="{{ route('list.gallery', $list) }}" class="relative z-10 px-4 py-2 bg-white text-gray-900 text-xs font-bold rounded-lg active:scale-95 transition">
+                    Ver Fotos
+                </a>
+            </div>
+        </div>
+        @endif
+
+        {{--
+           6. LISTA DE PRESENTES (GRID)
+        --}}
+        <div id="presentes" class="container mx-auto px-4 mt-8 scroll-mt-24">
+
+            {{-- Filtros (Estilo "Pílula") --}}
+            <div class="flex justify-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-2">
+                @php
+                    $params = ['list' => $list->id, 'slug' => \Illuminate\Support\Str::slug($list->display_name), 'ordenar' => $ordenar_ativo ?? null];
+                @endphp
+                <a href="{{ route('list.public.show', array_merge($params, ['filtro' => 'todos'])) }}"
+                   class="px-5 py-2 rounded-full text-xs font-bold border transition whitespace-nowrap {{ $filtro_ativo == 'todos' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200' }}">
+                   Todos
+                </a>
+                <a href="{{ route('list.public.show', array_merge($params, ['filtro' => 'disponiveis'])) }}"
+                   class="px-5 py-2 rounded-full text-xs font-bold border transition whitespace-nowrap {{ $filtro_ativo == 'disponiveis' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200' }}">
+                   Disponíveis
+                </a>
+            </div>
+
+            {{-- Grid Responsivo (2 colunas no mobile, 3/4 no desktop) --}}
+            <div id="gradeDePresentes" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+                @forelse($gifts as $gift)
+                    @php
+                        $esgotado = $gift->quantity_paid >= $gift->quantity;
+                        $restantes = max(0, $gift->quantity - $gift->quantity_paid);
+                    @endphp
+
+                    {{-- Card do Presente --}}
+                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col overflow-hidden relative group">
+
+                        {{-- Imagem (Aspect Ratio 1:1) --}}
+                        <div class="relative aspect-square bg-gray-50 overflow-hidden">
+                            @if ($gift->image_url)
+                                @if (\Illuminate\Support\Str::startsWith($gift->image_url, 'gift_images/'))
+                                    <img src="{{ asset('storage/' . $gift->image_url) }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-emerald-200">
+                                        <i data-lucide="{{ $gift->image_url }}" class="w-10 h-10"></i>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-300 text-[10px] font-bold uppercase">Sem Foto</div>
+                            @endif
+
+                            {{-- Badges --}}
+                            @if($esgotado)
+                                <div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
+                                    <span class="bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Esgotado</span>
+                                </div>
+                            @elseif($gift->quantity > 1)
+                                <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                                    restam {{ $restantes }}
                                 </span>
                             @endif
                         </div>
-                        <div class="text-left">
-                            <h3 class="text-white font-bold text-sm leading-tight group-hover:text-pink-200 transition">Galeria da Festa</h3>
-                            <p class="text-gray-400 text-xs">Veja fotos ou poste a sua</p>
-                        </div>
-                    </a>
 
-                    <div class="flex items-center gap-1 pr-1">
-                         <button type="button" onclick="document.getElementById('modalFoto').showModal()"
-                            class="hidden sm:flex px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition items-center gap-2">
-                            <i data-lucide="plus" class="w-3 h-3"></i> Postar
-                        </button>
+                        {{-- Conteúdo --}}
+                        <div class="p-3 flex flex-col flex-1">
+                            <h3 class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.5em] mb-1">
+                                {{ $gift->title }}
+                            </h3>
 
-                        <a href="{{ route('list.gallery', $list) }}"
-                           class="px-4 py-2 bg-white text-gray-900 text-xs font-bold rounded-xl hover:bg-gray-100 transition flex items-center gap-2">
-                            Ver Fotos <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
+                            <div class="mt-auto pt-2 border-t border-gray-50">
+                                <p class="text-base sm:text-lg font-extrabold text-emerald-600">
+                                    R$ {{ number_format($gift->value, 2, ',', '.') }}
+                                </p>
 
-        {{-- LISTA DE PRESENTES (Grid) --}}
-        <div class="container mx-auto px-4 sm:px-6 pb-16" id="presentes">
-            <div class="max-w-6xl mx-auto">
-
-                {{-- Filtros (Compactos) --}}
-                <div class="flex flex-wrap justify-center gap-2 mb-8">
-                    @php
-                        $urlParams = ['list' => $list->id, 'slug' => \Illuminate\Support\Str::slug($list->display_name)];
-                        $filtroParams  = array_merge($urlParams, ['ordenar' => $ordenar_ativo ?? null]);
-                    @endphp
-                    <a href="{{ route('list.public.show', array_merge($filtroParams, ['filtro' => 'todos'])) }}"
-                       class="px-4 py-1.5 rounded-full text-xs font-bold border transition {{ $filtro_ativo == 'todos' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400' }}">Todos</a>
-                    <a href="{{ route('list.public.show', array_merge($filtroParams, ['filtro' => 'disponiveis'])) }}"
-                       class="px-4 py-1.5 rounded-full text-xs font-bold border transition {{ $filtro_ativo == 'disponiveis' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400' }}">Disponíveis</a>
-                </div>
-
-                <div id="gradeDePresentes" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-                    @forelse($gifts as $gift)
-                        @php
-                            $esgotado = $gift->quantity_paid >= $gift->quantity;
-                            $cotasRestantes = max(0, $gift->quantity - $gift->quantity_paid);
-                        @endphp
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden group">
-                            <div class="relative aspect-square overflow-hidden bg-gray-50">
-                                @if ($gift->image_url)
-                                    @if (\Illuminate\Support\Str::startsWith($gift->image_url, 'gift_images/'))
-                                        <img src="{{ asset('storage/' . $gift->image_url) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" loading="lazy">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-emerald-200 group-hover:text-emerald-300 transition">
-                                            <i data-lucide="{{ $gift->image_url }}" class="w-12 h-12"></i>
-                                        </div>
-                                    @endif
+                                @if(!$esgotado)
+                                    <button
+                                        class="mt-2 w-full py-2.5 rounded-lg bg-gray-900 text-white text-xs font-bold active:scale-95 transition hover:bg-gray-800"
+                                        data-presentear="{{ $gift->id }}"
+                                        data-titulo="{{ $gift->title }}"
+                                        data-valor="{{ $gift->value }}">
+                                        Presentear
+                                    </button>
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center text-gray-300 font-bold text-[10px] uppercase tracking-widest">Sem Foto</div>
+                                    <button disabled class="mt-2 w-full py-2.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-bold cursor-not-allowed">
+                                        Indisponível
+                                    </button>
                                 @endif
-
-                                <div class="absolute top-2 right-2">
-                                    @if($esgotado)
-                                        <span class="bg-gray-900/80 backdrop-blur text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm uppercase">Esgotado</span>
-                                    @elseif($gift->quantity > 1)
-                                        <span class="bg-emerald-600/90 backdrop-blur text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm uppercase">{{ $cotasRestantes }} cotas</span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="p-3 flex flex-col flex-1">
-                                <h3 class="font-bold text-gray-800 text-sm line-clamp-2 leading-tight mb-1 min-h-[2.5rem]">{{ $gift->title }}</h3>
-                                <div class="mt-auto pt-2">
-                                    <p class="text-lg font-extrabold text-emerald-600">R$ {{ number_format($gift->value, 2, ',', '.') }}</p>
-
-                                    @if($esgotado)
-                                        <button disabled class="mt-2 w-full py-2 rounded-lg bg-gray-100 text-gray-400 font-bold text-xs cursor-not-allowed">Indisponível</button>
-                                    @else
-                                        <button
-                                            class="mt-2 w-full py-2 rounded-lg bg-gray-900 text-white font-bold text-xs hover:bg-gray-800 active:scale-95 transition flex items-center justify-center gap-1.5"
-                                            data-presentear="{{ $gift->id }}"
-                                            data-titulo="{{ $gift->title }}"
-                                            data-valor="{{ $gift->value }}">
-                                            Presentear
-                                        </button>
-                                    @endif
-                                </div>
                             </div>
                         </div>
-                    @empty
-                        <div class="col-span-full py-16 text-center">
-                            <div class="inline-flex p-4 rounded-full bg-gray-50 mb-3 text-gray-400">
-                                <i data-lucide="search-x" class="w-8 h-8"></i>
-                            </div>
-                            <p class="text-gray-500 text-sm">Nenhum presente encontrado.</p>
-                            <a href="{{ route('list.public.show', $urlParams) }}" class="text-emerald-600 text-sm font-bold hover:underline mt-1 inline-block">Limpar filtros</a>
+                    </div>
+                @empty
+                    <div class="col-span-full py-12 text-center">
+                        <div class="inline-flex p-3 rounded-full bg-gray-100 mb-3 text-gray-400">
+                            <i data-lucide="search-x" class="w-6 h-6"></i>
                         </div>
-                    @endforelse
-                </div>
+                        <p class="text-gray-500 text-sm">Nenhum presente nesta categoria.</p>
+                        <a href="{{ route('list.public.show', $urlParams) }}" class="text-emerald-600 text-sm font-bold mt-2 inline-block">Ver todos</a>
+                    </div>
+                @endforelse
             </div>
         </div>
 
-        {{-- MURAL DE RECADOS (Carrossel Automático) --}}
+        {{--
+           7. MURAL DE RECADOS (Swiper)
+        --}}
         @if($transactions->count() > 0)
-        <div class="bg-gray-50 py-16 border-t border-gray-100">
+        <div class="bg-gray-50 py-12 border-t border-gray-100">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-8">
-                    <div class="inline-block p-3 rounded-full bg-emerald-100 text-emerald-600 mb-3">
-                        <i data-lucide="message-circle-heart" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-2xl font-black text-gray-900">Mural de Recados</h3>
-                    <p class="text-gray-500 text-sm mt-1">Mensagens de carinho deixadas pelos convidados</p>
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Mural de Recados</h3>
+                    <p class="text-xs text-gray-500">Mensagens de quem já presenteou</p>
                 </div>
 
-                {{-- Container do Swiper --}}
-                <div class="swiper mySwiper max-w-2xl mx-auto pb-10">
+                <div class="swiper mySwiper pb-10">
                     <div class="swiper-wrapper">
                         @foreach ($transactions as $tx)
-                            <div class="swiper-slide h-auto">
-                                <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center h-full flex flex-col justify-center items-center relative">
-
-                                    {{-- Ícone de Aspas Decorativo --}}
-                                    <div class="absolute top-4 left-6 text-emerald-100">
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" />
-                                        </svg>
-                                    </div>
-
-                                    <p class="text-gray-600 text-lg md:text-xl font-medium leading-relaxed italic mb-6 relative z-10">
-                                        "{{ $tx->guest_message ?: 'Um presente enviado com muito carinho!' }}"
+                            <div class="swiper-slide">
+                                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center relative mx-2">
+                                    <i data-lucide="quote" class="w-6 h-6 text-emerald-100 absolute top-4 left-4"></i>
+                                    <p class="text-gray-600 text-sm italic mb-4 relative z-10 pt-2">
+                                        "{{ $tx->guest_message ?: 'Um presente enviado com carinho!' }}"
                                     </p>
-
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center">
                                             {{ strtoupper(substr($tx->guest_name ?: 'A', 0, 1)) }}
                                         </div>
-                                        <div class="text-left">
-                                            <p class="font-bold text-gray-900 text-sm">{{ $tx->guest_name ?: 'Anônimo' }}</p>
-                                            <p class="text-xs text-gray-400">Enviou um presente</p>
-                                        </div>
+                                        <span class="text-xs font-bold text-gray-900">{{ $tx->guest_name ?: 'Anônimo' }}</span>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                    {{-- Paginação (Bolinhas) --}}
-                    <div class="swiper-pagination !-bottom-0"></div>
+                    <div class="swiper-pagination"></div>
                 </div>
             </div>
         </div>
         @endif
 
-        {{-- RSVP (Seção Final) --}}
+        {{--
+           8. RSVP (Formulário)
+        --}}
         @if ($list->rsvp_enabled)
-            <div class="bg-white py-16 border-t border-gray-100" id="rsvp">
-                <div class="container mx-auto px-4 max-w-md">
+            <div class="bg-white py-12 border-t border-gray-100 scroll-mt-20" id="rsvp">
+                <div class="container mx-auto px-4 max-w-lg">
                     <div class="text-center mb-6">
-                        <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-widest">Confirmar Presença</span>
-                        <h3 class="text-2xl font-extrabold text-gray-900">Confirmar Presença</h3>
+                        <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded">Confirmação</span>
+                        <h3 class="text-2xl font-black text-gray-900 mt-2">Você vai ao evento?</h3>
+                        <p class="text-sm text-gray-500">Ajude os noivos a organizar a festa.</p>
                     </div>
 
-                    <form action="{{ route('list.public.rsvp', $list) }}" method="POST" class="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <form action="{{ route('list.public.rsvp', $list) }}" method="POST" class="space-y-3 bg-gray-50 p-5 rounded-2xl border border-gray-100">
                         @csrf
-                        <input type="text" name="guest_name" required class="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm" placeholder="Seu Nome Completo">
+                        <input type="text" name="guest_name" required class="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm" placeholder="Nome Completo">
+
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-white p-2 rounded-xl border border-gray-200">
-                                <label class="block text-[10px] font-bold text-gray-500 uppercase ml-1 mb-1">Adultos</label>
-                                <input type="number" name="adults" value="1" min="1" required class="w-full border-none p-0 text-center focus:ring-0 font-bold text-gray-800">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase text-center mb-1">Adultos</label>
+                                <div class="flex items-center justify-center">
+                                    <button type="button" onclick="this.nextElementSibling.stepDown()" class="w-6 h-6 bg-gray-100 rounded text-gray-600">-</button>
+                                    <input type="number" name="adults" value="1" min="1" required class="w-12 border-none p-0 text-center focus:ring-0 font-bold text-gray-800 text-lg bg-transparent">
+                                    <button type="button" onclick="this.previousElementSibling.stepUp()" class="w-6 h-6 bg-gray-100 rounded text-gray-600">+</button>
+                                </div>
                             </div>
                             <div class="bg-white p-2 rounded-xl border border-gray-200">
-                                <label class="block text-[10px] font-bold text-gray-500 uppercase ml-1 mb-1">Crianças</label>
-                                <input type="number" name="children" value="0" min="0" required class="w-full border-none p-0 text-center focus:ring-0 font-bold text-gray-800">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase text-center mb-1">Crianças</label>
+                                <div class="flex items-center justify-center">
+                                    <button type="button" onclick="this.nextElementSibling.stepDown()" class="w-6 h-6 bg-gray-100 rounded text-gray-600">-</button>
+                                    <input type="number" name="children" value="0" min="0" required class="w-12 border-none p-0 text-center focus:ring-0 font-bold text-gray-800 text-lg bg-transparent">
+                                    <button type="button" onclick="this.previousElementSibling.stepUp()" class="w-6 h-6 bg-gray-100 rounded text-gray-600">+</button>
+                                </div>
                             </div>
                         </div>
-                        <input type="text" name="contact" class="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm" placeholder="E-mail ou Telefone (Opcional)">
-                        <button type="submit" class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">
-                            Enviar Confirmação
+
+                        <input type="text" name="contact" class="w-full px-4 py-3 rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 text-sm" placeholder="Telefone ou E-mail (Opcional)">
+
+                        <button type="submit" class="w-full py-3.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg active:scale-95">
+                            Confirmar Presença
                         </button>
                     </form>
                 </div>
             </div>
         @endif
 
-        {{-- BARRA FIXA MOBILE --}}
-        <div class="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-md border-t border-gray-200 pb-safe sm:hidden">
-            <div class="grid {{ $list->gallery_enabled ? 'grid-cols-4' : 'grid-cols-2' }} h-16">
-
-                {{-- Link Lista (Sempre presente) --}}
-                <a href="#presentes" class="flex flex-col items-center justify-center text-gray-500 hover:text-emerald-600">
-                    <i data-lucide="gift" class="w-5 h-5 mb-0.5"></i>
-                    <span class="text-[9px] font-bold uppercase">Lista</span>
-                </a>
-
-                {{-- [REGRA] Botões da Galeria só se ativado --}}
-                @if($list->gallery_enabled)
-                    <a href="{{ route('list.gallery', $list) }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 relative">
-                        <i data-lucide="grid" class="w-5 h-5 mb-0.5"></i>
-                        <span class="text-[9px] font-bold uppercase">Galeria</span>
-                    </a>
-
-                    <button type="button" onclick="document.getElementById('modalFoto').showModal()" class="flex flex-col items-center justify-center text-gray-500 hover:text-blue-600">
-                        <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
-                        <span class="text-[9px] font-bold uppercase">Postar</span>
-                    </button>
-                @endif
-
-                {{-- Link RSVP (Sempre presente se ativado) --}}
-                @if ($list->rsvp_enabled)
-                    <a href="#rsvp" class="flex flex-col items-center justify-center text-gray-500 hover:text-emerald-600">
-                        <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
-                        <span class="text-[9px] font-bold uppercase">RSVP</span>
-                    </a>
-                @endif
-            </div>
-        </div>
-
     </section>
 
-    {{-- MODAL PIX --}}
+    {{--
+       9. NAVEGAÇÃO INFERIOR FIXA (MOBILE)
+       Essa barra garante acesso rápido às funções principais.
+    --}}
+    <div class="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-safe sm:hidden">
+        <div class="grid {{ ($list->gallery_enabled && $list->rsvp_enabled) ? 'grid-cols-4' : 'grid-cols-2' }} h-14">
+
+            {{-- Botão Lista (Padrão) --}}
+            <a href="#presentes" class="flex flex-col items-center justify-center text-gray-500 hover:text-emerald-600 active:text-emerald-700">
+                <i data-lucide="gift" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Lista</span>
+            </a>
+
+            @if($list->gallery_enabled)
+                {{-- Botão Galeria --}}
+                <a href="{{ route('list.gallery', $list) }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 active:text-purple-700">
+                    <i data-lucide="grid" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wide">Galeria</span>
+                </a>
+
+                {{-- Botão Postar Foto (Abre Modal) --}}
+                <button type="button" onclick="document.getElementById('modalFoto').showModal()" class="flex flex-col items-center justify-center text-gray-500 hover:text-blue-600 active:text-blue-700">
+                    <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wide">Postar</span>
+                </button>
+            @endif
+
+            @if($list->rsvp_enabled)
+                {{-- Botão RSVP --}}
+                <a href="#rsvp" class="flex flex-col items-center justify-center text-gray-500 hover:text-emerald-600 active:text-emerald-700">
+                    <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wide">RSVP</span>
+                </a>
+            @endif
+        </div>
+    </div>
+
+    {{-- INCLUDES: MODALS --}}
     @include('public-modal-pix', ['pix_key' => $list->pix_key])
 
-    {{-- MODAL UPLOAD FOTO (Apenas se galeria ativa) --}}
     @if($list->gallery_enabled)
-    <dialog id="modalFoto" class="rounded-3xl p-0 w-full max-w-sm shadow-2xl backdrop:bg-black/80">
-        <form method="POST" action="{{ route('public.photos.store', $list) }}" enctype="multipart/form-data" class="bg-white p-6 sm:p-8">
+    <dialog id="modalFoto" class="rounded-3xl p-0 w-full max-w-sm shadow-2xl backdrop:bg-black/80 m-auto">
+        <form method="POST" action="{{ route('public.photos.store', $list) }}" enctype="multipart/form-data" class="bg-white p-6">
             @csrf
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-extrabold text-gray-900">Postar Foto</h3>
-                <button type="button" onclick="document.getElementById('modalFoto').close()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Postar Foto</h3>
+                <button type="button" onclick="document.getElementById('modalFoto').close()" class="p-2 bg-gray-100 rounded-full">
                     <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
                 </button>
             </div>
 
-            <div class="space-y-5">
-                <div class="border-2 border-dashed border-emerald-100 bg-emerald-50/30 rounded-2xl p-8 text-center cursor-pointer relative group hover:bg-emerald-50 transition">
-                    <input type="file" name="photo" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)">
-                    <div id="upload-placeholder" class="transition group-hover:scale-105">
-                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <i data-lucide="image-plus" class="w-6 h-6"></i>
-                        </div>
-                        <p class="text-sm font-bold text-gray-700">Toque para escolher</p>
+            <div class="space-y-4">
+                {{-- Input Customizado de Arquivo --}}
+                <div class="border-2 border-dashed border-gray-200 rounded-xl h-40 relative bg-gray-50 flex items-center justify-center group overflow-hidden">
+                    <input type="file" name="photo" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" onchange="previewImage(this)">
+                    <div id="upload-placeholder" class="text-center group-hover:scale-105 transition">
+                        <i data-lucide="image-plus" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                        <p class="text-xs font-bold text-gray-500">Toque para escolher</p>
                     </div>
-                    <img id="image-preview" class="hidden w-full h-40 object-contain rounded-xl mx-auto shadow-md">
+                    <img id="image-preview" class="hidden w-full h-full object-cover">
                 </div>
 
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Seu Nome</label>
-                        <input type="text" name="guest_name" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 text-sm transition" placeholder="Ex: Carol">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Legenda</label>
-                        <input type="text" name="message" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 text-sm transition" placeholder="Ex: Amamos a festa!">
-                    </div>
-                </div>
+                <input type="text" name="guest_name" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Seu Nome">
+                <input type="text" name="message" class="w-full px-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Legenda (opcional)">
 
-                <button type="submit" class="w-full py-3.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition shadow-lg flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i> Enviar para Galeria
+                <button type="submit" class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition">
+                    Enviar Foto
                 </button>
             </div>
         </form>
     </dialog>
     @endif
 
-    {{-- SCRIPTS NO FINAL DA PÁGINA --}}
+    {{-- SCRIPTS --}}
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        // Preview da imagem no modal
         function previewImage(input) {
             const preview = document.getElementById('image-preview');
             const placeholder = document.getElementById('upload-placeholder');
@@ -463,7 +438,7 @@
             }
         }
 
-        // Lógica Modal PIX
+        // Lógica do Modal PIX (Preenche dados dinâmicos)
         document.getElementById('gradeDePresentes')?.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-presentear]');
             if (!btn) return;
@@ -471,43 +446,46 @@
             const giftTitle = btn.dataset.titulo;
             const modal = document.getElementById('modalPix');
             const form = document.getElementById('formPixPagamento');
+
+            // Ajusta a URL para o presente específico
             const url = `{{ url('/pagar') }}/${giftId}`;
             form.action = url;
-            modal.querySelector('#modalTitle').textContent = `Presentear: ${giftTitle}`;
+
+            modal.querySelector('#modalTitle').textContent = giftTitle;
             const pixKeyInput = modal.querySelector('#pixChave');
             if (pixKeyInput) pixKeyInput.value = "{{ $list->pix_key ?? 'CHAVE_PIX_NAO_CONFIGURADA' }}";
+
             modal.showModal();
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Inicializa Ícones
             if (window.lucide) window.lucide.createIcons();
 
-            // Inicializa Carrossel (Swiper)
-            var swiper = new Swiper(".mySwiper", {
-                spaceBetween: 30,
+            // Swiper Mural
+            new Swiper(".mySwiper", {
+                slidesPerView: 1.1, // Mostra um pouco do próximo slide para incentivar rolagem
+                spaceBetween: 16,
                 centeredSlides: true,
                 loop: true,
-                autoHeight: true, // Ajusta altura automaticamente
-                autoplay: {
-                    delay: 4000, // Tempo de 4 segundos
-                    disableOnInteraction: false,
-                },
                 pagination: {
                     el: ".swiper-pagination",
                     clickable: true,
                 },
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 20 },
+                    1024: { slidesPerView: 3, spaceBetween: 30 }
+                }
             });
         });
     </script>
+
     <style>
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         @keyframes bounceIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 1s ease-out; }
     </style>
-
 </x-guest-layout>
